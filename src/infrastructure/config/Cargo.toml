@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-fridgers-backend-use-case = { path = "../../use-case/use-case" }
+fridgers-backend-use-case = { path = "../../use-case" }
 
 dotenvy = { workspace = true }
 envy = { workspace = true }
