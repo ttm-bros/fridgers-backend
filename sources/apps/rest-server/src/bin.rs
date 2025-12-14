@@ -7,10 +7,10 @@ use tracing_log::LogTracer;
 async fn main() -> std::io::Result<()> {
     let config = fridgers_backend_config::Config::from_env().unwrap();
 
-    LogTracer::init().ok();
-    tracing_subscriber::fmt()
+    let _ = LogTracer::init();
+    let _ = tracing_subscriber::fmt()
         .with_max_level(Level::from_str(config.log.level.as_str()).unwrap())
-        .init();
+        .try_init();
 
     HttpServer::new(|| {
         App::new()
