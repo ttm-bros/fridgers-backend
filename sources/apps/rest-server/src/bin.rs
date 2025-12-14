@@ -1,18 +1,18 @@
+use actix_web::{web, App, HttpRequest, HttpServer, Responder};
 
-async fn main() -> anyhow::Result<()> {
-    use rest_server::config::Config;
-    use rest_server::server::RestServer;
-    use rest_server::tracing_util::init_tracing;
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(greet))
+            .route("/{name}", web::get().to(greet))
+    })
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
+}
 
-    // Initialize tracing for logging
-    init_tracing("rest-server")?;
-
-    // Load configuration from environment variables or config files
-    let config = Config::load()?;
-
-    // Create and start the REST server
-    let server = RestServer::new(config);
-    server.start().await?;
-
-    Ok(())
+async fn greet(req: HttpRequest) -> impl Responder {
+    let name = req.match_info().get("name").unwrap_or("World");
+    format!("Hello {}!", &name)
 }
