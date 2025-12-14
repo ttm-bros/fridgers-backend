@@ -1,6 +1,7 @@
 use dotenvy::dotenv;
 use serde::Deserialize;
 use std::marker::PhantomData;
+use envy::prefixed;
 
 #[derive(Debug)]
 pub struct Config {
@@ -25,11 +26,8 @@ impl Config {
     pub fn from_env() -> Result<Self, envy::Error> {
         dotenv().expect(".env file not found");
 
-        // SERVER_ プレフィックスの環境変数を ServerConfig に
-        let server = envy::prefixed("SERVER_").from_env::<ServerConfig>()?;
-
-        // DB_ プレフィックスの環境変数を DbConfig に
-        let db = envy::prefixed("DB_").from_env::<DbConfig>()?;
+        let server = prefixed("SERVER_").from_env::<ServerConfig>()?;
+        let db = prefixed("DB_").from_env::<DbConfig>()?;
 
         Ok(Self {
             server,

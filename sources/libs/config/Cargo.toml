@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-dotenvy = "0.15.*"
-envy = "0.4.*"
-serde = { version = "1.0.*", features = ["derive"] }
+dotenvy = { workspace = true }
+envy = { workspace = true }
+serde = { workspace = true }

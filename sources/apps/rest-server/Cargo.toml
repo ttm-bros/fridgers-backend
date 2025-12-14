@@ -8,7 +8,8 @@ name = "rest-server"
 path = "src/bin.rs"
 
 [dependencies]
+fridgers-backend-config = { path = "../../libs/config" }
+
 actix-http = "3.11.*"
 actix-web = "4.12.*"
 env_logger = "0.11.*"
-
