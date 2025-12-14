@@ -1,3 +1,6 @@
+mod error;
+pub use error::{Error, Result};
+
 use dotenvy::dotenv;
 use envy::prefixed;
 use serde::Deserialize;
@@ -29,8 +32,8 @@ pub struct DbConfig {
 }
 
 impl Config {
-    pub fn from_env() -> Result<Self, envy::Error> {
-        dotenv().expect(".env file not found");
+    pub fn from_env() -> Result<Self> {
+        dotenv()?;
 
         let log = prefixed("LOG_").from_env::<LogConfig>()?;
         let server = prefixed("SERVER_").from_env::<ServerConfig>()?;
