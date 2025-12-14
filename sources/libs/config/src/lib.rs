@@ -32,7 +32,7 @@ impl Config {
     pub fn from_env() -> Result<Self, envy::Error> {
         dotenv().expect(".env file not found");
 
-        let log = prefixed("LOG_").from_env::<ServerConfig>()?;
+        let log = prefixed("LOG_").from_env::<LogConfig>()?;
         let server = prefixed("SERVER_").from_env::<ServerConfig>()?;
         let db = prefixed("DB_").from_env::<DbConfig>()?;
 
