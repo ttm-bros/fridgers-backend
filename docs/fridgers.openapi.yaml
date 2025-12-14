@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Fridgers API
+  description: API for managing smart fridges and their contents.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: liveness
+    description: Liveness probe endpoint
+  - name: users
+    description: Operations related to users
+  - name: groups
+    description: Operations related to groups
+  - name: fridges
+    description: Operations related to fridges
+  - name: items
+    description: Operations related to items in fridges
+
+paths:
+  /liveness:
+    get:
+      tags:
+        - liveness
+      summary: Liveness probe
+      description: Check if the service is alive.
+      responses:
+        '200':
+          description: Service is alive
