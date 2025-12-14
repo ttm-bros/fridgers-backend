@@ -1,5 +1,5 @@
 [package]
-name = "fridgers-backend-reset-server"
+name = "fridgers-backend-rest-server"
 version = "0.1.0"
 edition = "2024"
 
@@ -10,3 +10,5 @@ path = "src/bin.rs"
 [dependencies]
 actix-http = "3.11.*"
 actix-web = "4.12.*"
+env_logger = "0.11.*"
+
