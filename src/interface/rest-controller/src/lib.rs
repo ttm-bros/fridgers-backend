@@ -1,52 +1,6 @@
+pub mod handler;
+pub mod route;
 pub mod schema;
 
-use actix_web::{web, HttpResponse, Responder};
-use fridgers_backend_domain::user::{UserId, UserName};
-use fridgers_backend_use_case::interactor::FridgersRestInteractor;
-use schema::user::register::{RegisterUserRequest, RegisterUserResponse};
-use std::sync::Arc;
-
-pub async fn register_user(
-    interactor: web::Data<Arc<FridgersRestInteractor>>,
-    req: web::Json<RegisterUserRequest>,
-) -> impl Responder {
-    // ドメインオブジェクトの生成
-    let user_id = match UserId::try_from(req.id.clone()) {
-        Ok(id) => id,
-        Err(e) => {
-            return HttpResponse::BadRequest().json(serde_json::json!({
-                "error": e.to_string()
-            }));
-        }
-    };
-
-    let user_name = match UserName::try_new(req.name.clone()) {
-        Ok(name) => name,
-        Err(e) => {
-            return HttpResponse::BadRequest().json(serde_json::json!({
-                "error": e.to_string()
-            }));
-        }
-    };
-
-    // interactorを通じてユースケースを実行
-    let user = match interactor.handle_register_user(user_id, user_name) {
-        Ok(user) => user,
-        Err(e) => {
-            return HttpResponse::BadRequest().json(serde_json::json!({
-                "error": e.to_string()
-            }));
-        }
-    };
-
-    let response = RegisterUserResponse::from(user);
-    HttpResponse::Created().json(response)
-}
-
-// コントローラーの設定を公開する関数
-pub fn configure_users(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::resource("/users")
-            .route(web::post().to(register_user))
-    );
-}
+// ルーティング設定を公開
+pub use route::user::configure as configure_users;
