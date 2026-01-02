@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
             .configure(rest_controller::configure_health)
             .configure(rest_controller::configure_users)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((config.server.url.as_str(), config.server.port))?
     .run()
     .await
 }
