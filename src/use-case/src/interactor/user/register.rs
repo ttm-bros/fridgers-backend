@@ -1,6 +1,5 @@
 use crate::Result;
 use crate::interactor::FridgersRestInteractor;
-use crate::repository::UserRepository;
 use fridgers_backend_domain::user::{User, UserId, UserName};
 
 impl FridgersRestInteractor {

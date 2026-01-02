@@ -9,6 +9,8 @@ path = "src/bin.rs"
 
 [dependencies]
 fridgers-backend-config = { workspace = true }
+fridgers-backend-use-case = { workspace = true }
+rdb-gateway = { path = "../../interface/rdb-gateway" }
 rest-controller = { workspace = true }
 
 actix-http = { workspace = true }

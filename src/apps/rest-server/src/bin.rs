@@ -1,5 +1,8 @@
 use actix_web::{App, HttpServer, dev::Service, middleware, web};
+use fridgers_backend_use_case::interactor::FridgersRestInteractor;
+use rdb_gateway::InMemoryUserRepository;
 use std::str::FromStr;
+use std::sync::Arc;
 use tracing::{Level, info_span};
 use tracing_log::LogTracer;
 
@@ -16,8 +19,14 @@ async fn main() -> std::io::Result<()> {
         .with_max_level(Level::from_str(config.log.level.as_str()).unwrap())
         .try_init();
 
-    HttpServer::new(|| {
+    // 依存性の構築
+    let repository = InMemoryUserRepository::new();
+    let interactor = Arc::new(FridgersRestInteractor::new(Box::new(repository)));
+
+    HttpServer::new(move || {
         App::new()
+            // DIコンテナの登録
+            .app_data(web::Data::new(interactor.clone()))
             // トレース用のスパンを追加
             .wrap_fn(|req, srv| {
                 let span = info_span!(

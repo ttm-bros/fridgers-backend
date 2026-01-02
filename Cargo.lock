@@ -483,6 +483,8 @@ dependencies = [
  "actix-http",
  "actix-web",
  "fridgers-backend-config",
+ "fridgers-backend-use-case",
+ "rdb-gateway",
  "rest-controller",
  "tracing",
  "tracing-log",
@@ -1042,7 +1044,6 @@ dependencies = [
  "actix-web",
  "fridgers-backend-domain",
  "fridgers-backend-use-case",
- "rdb-gateway",
  "serde",
  "serde_json",
 ]

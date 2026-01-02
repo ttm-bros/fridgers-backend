@@ -2,11 +2,14 @@ pub mod schema;
 
 use actix_web::{web, HttpResponse, Responder};
 use fridgers_backend_domain::user::{UserId, UserName};
-use fridgers_backend_use_case::interactor::RegisterUserUseCase;
-use rdb_gateway::InMemoryUserRepository;
+use fridgers_backend_use_case::interactor::FridgersRestInteractor;
 use schema::user::register::{RegisterUserRequest, RegisterUserResponse};
+use std::sync::Arc;
 
-pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responder {
+pub async fn register_user(
+    interactor: web::Data<Arc<FridgersRestInteractor>>,
+    req: web::Json<RegisterUserRequest>,
+) -> impl Responder {
     // ドメインオブジェクトの生成
     let user_id = match UserId::try_from(req.id.clone()) {
         Ok(id) => id,
@@ -26,12 +29,8 @@ pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responde
         }
     };
 
-    // リポジトリの作成
-    let repository = InMemoryUserRepository::new();
-
-    // ユースケースの実行
-    let use_case = RegisterUserUseCase::new(repository);
-    let user = match use_case.execute(user_id, user_name) {
+    // interactorを通じてユースケースを実行
+    let user = match interactor.handle_register_user(user_id, user_name) {
         Ok(user) => user,
         Err(e) => {
             return HttpResponse::BadRequest().json(serde_json::json!({
