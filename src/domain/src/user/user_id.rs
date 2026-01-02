@@ -1,23 +1,31 @@
 use std::marker::PhantomData;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct UserId {
-    value: String,
+    value: Uuid,
     _hide_default_constructor: PhantomData<()>,
 }
 
 impl UserId {
-    pub fn new(id: String) -> Result<Self, String> {
-        if id.is_empty() {
-            return Err("User ID cannot be empty".to_string());
-        }
-        Ok(Self {
+    pub fn new(id: Uuid) -> Self {
+        Self {
             value: id,
             _hide_default_constructor: PhantomData,
-        })
+        }
     }
 
-    pub fn value(&self) -> &str {
-        &self.value
+    pub fn value(&self) -> Uuid {
+        self.value
+    }
+}
+
+impl TryFrom<String> for UserId {
+    type Error = String;
+
+    fn try_from(id: String) -> Result<Self, Self::Error> {
+        let uuid = Uuid::parse_str(&id)
+            .map_err(|e| format!("Invalid UUID format: {}", e))?;
+        Ok(Self::new(uuid))
     }
 }

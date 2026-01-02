@@ -6,7 +6,7 @@ use schema::user::register::{RegisterUserRequest, RegisterUserResponse};
 
 pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responder {
     // ドメインオブジェクトの生成
-    let user_id = match UserId::new(req.id.clone()) {
+    let user_id = match UserId::try_from(req.id.clone()) {
         Ok(id) => id,
         Err(e) => {
             return HttpResponse::BadRequest().json(serde_json::json!({

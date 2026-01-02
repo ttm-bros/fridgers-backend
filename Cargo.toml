@@ -16,6 +16,7 @@ strum_macros = { version = "0.27.*" }
 tracing = { version = "0.1.43" }
 tracing-log = { version = "0.2.0" }
 tracing-subscriber = { version = "0.3.22" }
+uuid = { version = "1.11.*", features = ["serde", "v4"] }
 
 # ワークスペース内クレート
 fridgers-backend-config = { path = "src/infrastructure/config" }
