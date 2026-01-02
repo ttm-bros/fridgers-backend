@@ -6,10 +6,6 @@ use std::sync::Arc;
 use tracing::{Level, info_span};
 use tracing_log::LogTracer;
 
-async fn health_check() -> &'static str {
-    "OK"
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = fridgers_backend_config::Config::from_env().unwrap();
@@ -43,9 +39,8 @@ async fn main() -> std::io::Result<()> {
             })
             // アクセスログの追加
             .wrap(middleware::Logger::default())
-            // ヘルスチェックエンドポイント
-            .route("/liveness", web::get().to(health_check))
-            // ユーザー関連のエンドポイントを設定
+            // エンドポイントの設定
+            .configure(rest_controller::configure_health)
             .configure(rest_controller::configure_users)
     })
     .bind(("127.0.0.1", 8080))?
