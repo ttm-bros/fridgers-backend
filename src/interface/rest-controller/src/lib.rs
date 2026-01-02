@@ -1,7 +1,9 @@
 pub mod schema;
 
 use actix_web::{web, HttpResponse, Responder};
-use fridgers_backend_domain::user::{User, UserId, UserName};
+use fridgers_backend_domain::user::{UserId, UserName};
+use fridgers_backend_use_case::service::RegisterUserUseCase;
+use rdb_gateway::InMemoryUserRepository;
 use schema::user::register::{RegisterUserRequest, RegisterUserResponse};
 
 pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responder {
@@ -24,10 +26,20 @@ pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responde
         }
     };
 
-    let user = User::new(user_id, user_name);
+    // リポジトリの作成
+    let repository = InMemoryUserRepository::new();
 
-    // ここで将来的にはユースケースを呼び出す
-    // 現在はモックとして直接レスポンスを返す
+    // ユースケースの実行
+    let use_case = RegisterUserUseCase::new(repository);
+    let user = match use_case.execute(user_id, user_name) {
+        Ok(user) => user,
+        Err(e) => {
+            return HttpResponse::BadRequest().json(serde_json::json!({
+                "error": e.to_string()
+            }));
+        }
+    };
+
     let response = RegisterUserResponse::from(user);
     HttpResponse::Created().json(response)
 }

@@ -984,6 +984,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rdb-gateway"
+version = "0.1.0"
+dependencies = [
+ "fridgers-backend-domain",
+ "fridgers-backend-use-case",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1034,6 +1042,7 @@ dependencies = [
  "actix-web",
  "fridgers-backend-domain",
  "fridgers-backend-use-case",
+ "rdb-gateway",
  "serde",
  "serde_json",
 ]

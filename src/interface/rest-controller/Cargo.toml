@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 fridgers-backend-domain = { workspace = true }
 fridgers-backend-use-case = { workspace = true }
+rdb-gateway = { path = "../rdb-gateway" }
 
 actix-web = { workspace = true }
 serde = { workspace = true }
