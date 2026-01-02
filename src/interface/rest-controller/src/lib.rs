@@ -15,7 +15,7 @@ pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responde
         }
     };
 
-    let user_name = match UserName::new(req.name.clone()) {
+    let user_name = match UserName::try_new(req.name.clone()) {
         Ok(name) => name,
         Err(e) => {
             return HttpResponse::BadRequest().json(serde_json::json!({

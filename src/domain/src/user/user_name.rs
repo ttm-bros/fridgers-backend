@@ -8,7 +8,7 @@ pub struct UserName {
 }
 
 impl UserName {
-    pub fn new(name: String) -> Result<Self> {
+    pub fn try_new(name: String) -> Result<Self> {
         if name.is_empty() {
             return Err(Error::InvalidLengthRange(
                 "User name cannot be empty".to_string(),
