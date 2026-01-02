@@ -1,119 +1,119 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイダンスを提供します。
 
-## Project Overview
+## プロジェクト概要
 
-Fridgers Backend is a Rust web service for managing smart fridges and their contents. The project uses Actix-web for the REST API and follows Clean Architecture principles with distinct layers.
+Fridgers Backendは、スマート冷蔵庫とその内容物を管理するためのRust製Webサービスです。REST APIにはActix-webを使用し、明確なレイヤー分離によるクリーンアーキテクチャの原則に従っています。
 
-## Build and Development Commands
+## ビルドと開発コマンド
 
-### Building
+### ビルド
 ```bash
-# Build all workspace members
+# すべてのワークスペースメンバーをビルド
 cargo build
 
-# Build in release mode
+# リリースモードでビルド
 cargo build --release
 
-# Build specific binary
+# 特定のバイナリをビルド
 cargo build --bin rest-server
 ```
 
-### Running
+### 実行
 ```bash
-# Run the REST server (runs on http://127.0.0.1:8080)
+# RESTサーバーを起動 (http://127.0.0.1:8080 で起動)
 cargo run --bin rest-server
 
-# The server requires environment variables - copy .env.template to .env first
+# サーバーは環境変数が必要 - 事前に .env.template を .env にコピー
 cp .env.template .env
 ```
 
-### Testing
+### テスト
 ```bash
-# Run all tests
+# すべてのテストを実行
 cargo test
 
-# Run tests for a specific package
+# 特定のパッケージのテストを実行
 cargo test -p fridgers-backend-domain
 cargo test -p fridgers-backend-use-case
 cargo test -p fridgers-backend-config
 
-# Run a specific test
+# 特定のテストを実行
 cargo test test_name
 ```
 
-### Code Quality
+### コード品質
 ```bash
-# Check code without building
+# ビルドせずにコードをチェック
 cargo check
 
-# Run clippy linter
+# clippyリンターを実行
 cargo clippy
 
-# Format code
+# コードをフォーマット
 cargo fmt
 ```
 
-## Architecture
+## アーキテクチャ
 
-The codebase follows **Clean Architecture** with a workspace structure separating concerns into distinct layers:
+このコードベースは**クリーンアーキテクチャ**に従い、関心事を明確なレイヤーに分離するワークスペース構造を採用しています：
 
-### Layer Structure (Dependency Direction: Apps → Interface → Use-Case → Domain)
+### レイヤー構造 (依存方向: Apps → Interface → Use-Case → Domain)
 
 1. **Domain Layer** (`src/domain/`)
-   - Core business entities and domain logic
-   - No external dependencies
-   - Currently minimal/placeholder
+   - コアビジネスエンティティとドメインロジック
+   - 外部依存なし
+   - 現在は最小限/プレースホルダー
 
 2. **Use-Case Layer** (`src/use-case/`)
-   - Application business rules and orchestration
-   - Defines `Error` enum mapping HTTP status codes (400, 401, 403, 404, 409, 412, 500)
-   - Independent of frameworks and external systems
+   - アプリケーションビジネスルールとオーケストレーション
+   - HTTPステータスコード (400, 401, 403, 404, 409, 412, 500) にマッピングされる`Error` enumを定義
+   - フレームワークや外部システムから独立
 
 3. **Interface Layer** (`src/interface/`)
-   - Adapters for external communication
-   - `rest-controller/`: REST API controllers (currently minimal)
-   - `rdb-gateway/`: Database gateway/repository implementations
+   - 外部通信のためのアダプター
+   - `rest-controller/`: REST APIコントローラー（現在は最小限）
+   - `rdb-gateway/`: データベースゲートウェイ/リポジトリ実装
 
 4. **Infrastructure Layer** (`src/infrastructure/`)
-   - `config/`: Environment-based configuration management
-     - Uses `dotenvy` for .env file loading
-     - Uses `envy` with prefixed environment variables (`LOG_`, `SERVER_`, `DB_`)
-     - Provides `Config::from_env()` for application configuration
-     - Config includes: LogConfig, ServerConfig, DbConfig
+   - `config/`: 環境変数ベースの設定管理
+     - .envファイル読み込みに`dotenvy`を使用
+     - プレフィックス付き環境変数 (`LOG_`, `SERVER_`, `DB_`) に`envy`を使用
+     - アプリケーション設定のための`Config::from_env()`を提供
+     - 設定内容: LogConfig, ServerConfig, DbConfig
 
 5. **Apps Layer** (`src/apps/`)
-   - `rest-server/`: Main application binary
-     - Actix-web HTTP server
-     - Middleware: request tracing spans, access logging
-     - Currently has placeholder greeting endpoints
+   - `rest-server/`: メインアプリケーションバイナリ
+     - Actix-web HTTPサーバー
+     - ミドルウェア: リクエストトレーシングスパン、アクセスログ
+     - 現在はプレースホルダーのグリーティングエンドポイント
 
-### Error Handling Pattern
+### エラーハンドリングパターン
 
-The project uses a layered error handling approach:
-- Each layer defines its own `Error` enum and `Result<T>` type alias
-- Infrastructure errors convert to use-case errors via `From` trait implementations
-- Use-case `Error` variants map to HTTP status codes (see `src/use-case/src/error.rs`)
+プロジェクトでは、レイヤー化されたエラーハンドリングアプローチを採用：
+- 各レイヤーが独自の`Error` enumと`Result<T>`型エイリアスを定義
+- インフラストラクチャエラーは`From`トレイト実装を通じてユースケースエラーに変換
+- ユースケース`Error`バリアントはHTTPステータスコードにマッピング (`src/use-case/src/error.rs`参照)
 
-### Configuration
+### 設定
 
-Configuration is loaded from environment variables with prefixes:
-- `LOG_LEVEL`: Logging level (e.g., "debug", "info")
-- `SERVER_URL`, `SERVER_PORT`: Server configuration
-- `DB_URL`, `DB_PORT`: Database configuration
+設定はプレフィックス付き環境変数から読み込まれます：
+- `LOG_LEVEL`: ログレベル (例: "debug", "info")
+- `SERVER_URL`, `SERVER_PORT`: サーバー設定
+- `DB_URL`, `DB_PORT`: データベース設定
 
-See `.env.template` for all available configuration options.
+利用可能なすべての設定オプションは`.env.template`を参照してください。
 
-### API Documentation
+### APIドキュメント
 
-OpenAPI specification is maintained in `docs/fridgers.openapi.yaml` covering:
-- Liveness probe endpoint
-- User operations
-- Group operations
-- Fridge operations
-- Item operations
+OpenAPI仕様は`docs/fridgers.openapi.yaml`で管理されており、以下をカバーしています：
+- Livenessプローブエンドポイント
+- ユーザー操作
+- グループ操作
+- 冷蔵庫操作
+- アイテム操作
 
-## Rust Toolchain
+## Rustツールチェーン
 
-This project uses Rust 1.92.0 as specified in `rust-toolchain.toml`. The toolchain will be automatically installed when using rustup.
+このプロジェクトは`rust-toolchain.toml`で指定されているRust 1.92.0を使用します。rustupを使用している場合、ツールチェーンは自動的にインストールされます。
