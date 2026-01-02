@@ -2,7 +2,7 @@ pub mod schema;
 
 use actix_web::{web, HttpResponse, Responder};
 use fridgers_backend_domain::user::{UserId, UserName};
-use fridgers_backend_use_case::service::RegisterUserUseCase;
+use fridgers_backend_use_case::interactor::RegisterUserUseCase;
 use rdb_gateway::InMemoryUserRepository;
 use schema::user::register::{RegisterUserRequest, RegisterUserResponse};
 

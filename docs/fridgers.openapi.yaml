@@ -26,7 +26,7 @@ paths:
       tags:
         - liveness
       summary: Liveness probe
-      description: Check if the service is alive.
+      description: Check if the interactor is alive.
       responses:
         '200':
           description: Service is alive

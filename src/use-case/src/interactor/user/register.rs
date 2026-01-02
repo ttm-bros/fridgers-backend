@@ -1,19 +1,11 @@
-use crate::repository::UserRepository;
 use crate::Result;
+use crate::interactor::FridgersRestInteractor;
+use crate::repository::UserRepository;
 use fridgers_backend_domain::user::{User, UserId, UserName};
 
-/// ユーザー登録ユースケース
-pub struct RegisterUserUseCase<R: UserRepository> {
-    user_repository: R,
-}
-
-impl<R: UserRepository> RegisterUserUseCase<R> {
-    pub fn new(user_repository: R) -> Self {
-        Self { user_repository }
-    }
-
+impl FridgersRestInteractor {
     /// ユーザーを登録する
-    pub fn execute(&self, user_id: UserId, user_name: UserName) -> Result<User> {
+    pub fn handle_register_user(&self, user_id: UserId, user_name: UserName) -> Result<User> {
         // ユーザーエンティティを作成
         let user = User::new(user_id, user_name);
 
@@ -21,7 +13,7 @@ impl<R: UserRepository> RegisterUserUseCase<R> {
         // 例: 既存ユーザーのチェック、バリデーションなど
 
         // リポジトリに保存
-        self.user_repository.save(&user)?;
+        self.repository.save(&user)?;
 
         Ok(user)
     }
