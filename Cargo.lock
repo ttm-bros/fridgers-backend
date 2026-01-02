@@ -469,12 +469,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "fridgers-backend-domain"
+version = "0.1.0"
+dependencies = [
+ "strum_macros",
+ "uuid",
+]
+
+[[package]]
 name = "fridgers-backend-rest-server"
 version = "0.1.0"
 dependencies = [
  "actix-http",
  "actix-web",
  "fridgers-backend-config",
+ "rest-controller",
  "tracing",
  "tracing-log",
  "tracing-subscriber",
@@ -484,6 +493,7 @@ dependencies = [
 name = "fridgers-backend-use-case"
 version = "0.1.0"
 dependencies = [
+ "fridgers-backend-domain",
  "strum_macros",
 ]
 
@@ -525,6 +535,17 @@ checksum = "85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a"
 dependencies = [
  "typenum",
  "version_check",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.2.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "335ff9f135e4384c8150d6f27c6daed433577f86b4750418338c01a1a2528592"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi",
 ]
 
 [[package]]
@@ -723,7 +744,7 @@ version = "0.1.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9afb3de4395d6b3e67a780b6de64b51c978ecf11cb9a462c66be7d4ca9039d33"
 dependencies = [
- "getrandom",
+ "getrandom 0.3.4",
  "libc",
 ]
 
@@ -959,7 +980,7 @@ version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99d9a13982dcf210057a8a78572b2217b667c3beacbf3a0d8b454f6f82837d38"
 dependencies = [
- "getrandom",
+ "getrandom 0.3.4",
 ]
 
 [[package]]
@@ -1005,6 +1026,17 @@ name = "regex-syntax"
 version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
+
+[[package]]
+name = "rest-controller"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "fridgers-backend-domain",
+ "fridgers-backend-use-case",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "rustc_version"
@@ -1379,6 +1411,16 @@ name = "utf8_iter"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
+
+[[package]]
+name = "uuid"
+version = "1.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b913a3b5fe84142e269d63cc62b64319ccaf89b748fc31fe025177f767a756c4"
+dependencies = [
+ "getrandom 0.2.16",
+ "serde",
+]
 
 [[package]]
 name = "valuable"

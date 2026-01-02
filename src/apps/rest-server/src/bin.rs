@@ -1,7 +1,11 @@
-use actix_web::{App, HttpRequest, HttpServer, Responder, dev::Service, web};
+use actix_web::{App, HttpServer, dev::Service, middleware, web};
 use std::str::FromStr;
 use tracing::{Level, info_span};
 use tracing_log::LogTracer;
+
+async fn health_check() -> &'static str {
+    "OK"
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -29,16 +33,13 @@ async fn main() -> std::io::Result<()> {
                 }
             })
             // アクセスログの追加
-            .wrap(actix_web::middleware::Logger::default())
-            .route("/", web::get().to(greet))
-            .route("/{name}", web::get().to(greet))
+            .wrap(middleware::Logger::default())
+            // ヘルスチェックエンドポイント
+            .route("/liveness", web::get().to(health_check))
+            // ユーザー関連のエンドポイントを設定
+            .configure(rest_controller::configure_users)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
-}
-
-async fn greet(req: HttpRequest) -> impl Responder {
-    let name = req.match_info().get("name").unwrap_or("World");
-    format!("Hello {}!", &name)
 }

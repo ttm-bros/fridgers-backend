@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+uuid = { workspace = true }
+strum_macros = { workspace = true }
 
 [dev-dependencies]
