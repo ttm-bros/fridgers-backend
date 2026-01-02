@@ -493,6 +493,7 @@ dependencies = [
 name = "fridgers-backend-use-case"
 version = "0.1.0"
 dependencies = [
+ "fridgers-backend-domain",
  "strum_macros",
 ]
 

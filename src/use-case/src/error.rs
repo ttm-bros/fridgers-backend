@@ -1,3 +1,5 @@
+use fridgers_backend_domain as domain;
+
 pub type Result<A> = std::result::Result<A, Error>;
 
 #[derive(Debug, Clone, PartialEq, strum_macros::Display)]
@@ -22,4 +24,13 @@ pub enum Error {
 
     // 500
     ExternalServer(String),
+}
+
+impl From<domain::Error> for Error {
+    fn from(err: domain::Error) -> Self {
+        match err {
+            domain::Error::InvalidFormat(msg) => Error::InvalidArgument(msg),
+            domain::Error::InvalidLengthRange(msg) => Error::InvalidArgument(msg),
+        }
+    }
 }
