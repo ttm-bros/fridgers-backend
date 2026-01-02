@@ -10,7 +10,7 @@ pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responde
         Ok(id) => id,
         Err(e) => {
             return HttpResponse::BadRequest().json(serde_json::json!({
-                "error": e
+                "error": e.to_string()
             }));
         }
     };
@@ -19,7 +19,7 @@ pub async fn register_user(req: web::Json<RegisterUserRequest>) -> impl Responde
         Ok(name) => name,
         Err(e) => {
             return HttpResponse::BadRequest().json(serde_json::json!({
-                "error": e
+                "error": e.to_string()
             }));
         }
     };

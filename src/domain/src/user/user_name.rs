@@ -1,3 +1,4 @@
+use crate::error::{Error, Result};
 use std::marker::PhantomData;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -7,9 +8,11 @@ pub struct UserName {
 }
 
 impl UserName {
-    pub fn new(name: String) -> Result<Self, String> {
+    pub fn new(name: String) -> Result<Self> {
         if name.is_empty() {
-            return Err("User name cannot be empty".to_string());
+            return Err(Error::InvalidLengthRange(
+                "User name cannot be empty".to_string(),
+            ));
         }
         Ok(Self {
             value: name,

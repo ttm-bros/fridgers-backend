@@ -1,3 +1,4 @@
+use crate::error::{Error, Result};
 use std::marker::PhantomData;
 use uuid::Uuid;
 
@@ -21,11 +22,11 @@ impl UserId {
 }
 
 impl TryFrom<String> for UserId {
-    type Error = String;
+    type Error = Error;
 
-    fn try_from(id: String) -> Result<Self, Self::Error> {
+    fn try_from(id: String) -> Result<Self> {
         let uuid = Uuid::parse_str(&id)
-            .map_err(|e| format!("Invalid UUID format: {}", e))?;
+            .map_err(|e| Error::InvalidFormat(format!("Invalid UUID format: {}", e)))?;
         Ok(Self::new(uuid))
     }
 }

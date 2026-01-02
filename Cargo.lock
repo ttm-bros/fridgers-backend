@@ -472,6 +472,7 @@ dependencies = [
 name = "fridgers-backend-domain"
 version = "0.1.0"
 dependencies = [
+ "strum_macros",
  "uuid",
 ]
 
