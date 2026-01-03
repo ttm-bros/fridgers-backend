@@ -3,12 +3,17 @@ name = "fridgers-backend-rest-server"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+path = "src/lib.rs"
+
 [[bin]]
 name = "rest-server"
 path = "src/bin.rs"
 
 [dependencies]
 fridgers-backend-config = { workspace = true }
+fridgers-backend-use-case = { workspace = true }
+rdb-gateway = { path = "../../interface/rdb-gateway" }
 rest-controller = { workspace = true }
 
 actix-http = { workspace = true }

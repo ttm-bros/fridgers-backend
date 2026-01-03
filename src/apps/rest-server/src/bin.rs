@@ -1,23 +1,24 @@
-use actix_web::{App, HttpServer, dev::Service, middleware, web};
-use std::str::FromStr;
-use tracing::{Level, info_span};
-use tracing_log::LogTracer;
-
-async fn health_check() -> &'static str {
-    "OK"
-}
+use actix_web::{App, HttpServer, dev::Service, web};
+use fridgers_backend_rest_server::{app, setup};
+use tracing::info_span;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = fridgers_backend_config::Config::from_env().unwrap();
+    // 設定の読み込み
+    let config = fridgers_backend_config::Config::from_env()
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, format!("{:?}", e)))?;
 
-    let _ = LogTracer::init();
-    let _ = tracing_subscriber::fmt()
-        .with_max_level(Level::from_str(config.log.level.as_str()).unwrap())
-        .try_init();
+    // ロガーの初期化
+    setup::setup_logger(&config)?;
 
-    HttpServer::new(|| {
+    // 依存性の構築
+    let interactor = setup::setup_dependencies();
+
+    // HTTPサーバーの起動
+    HttpServer::new(move || {
         App::new()
+            // DIコンテナの登録
+            .app_data(web::Data::new(interactor.clone()))
             // トレース用のスパンを追加
             .wrap_fn(|req, srv| {
                 let span = info_span!(
@@ -33,13 +34,11 @@ async fn main() -> std::io::Result<()> {
                 }
             })
             // アクセスログの追加
-            .wrap(middleware::Logger::default())
-            // ヘルスチェックエンドポイント
-            .route("/liveness", web::get().to(health_check))
-            // ユーザー関連のエンドポイントを設定
-            .configure(rest_controller::configure_users)
+            .wrap(app::logger())
+            // エンドポイントの設定
+            .configure(app::configure_routes)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((config.server.url.as_str(), config.server.port))?
     .run()
     .await
 }
