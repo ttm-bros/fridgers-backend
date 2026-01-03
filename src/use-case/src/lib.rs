@@ -1,4 +1,5 @@
 mod error;
+pub mod dto;
 pub mod interactor;
 pub mod repository;
 
