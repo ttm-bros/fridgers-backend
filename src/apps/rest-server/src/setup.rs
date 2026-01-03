@@ -1,5 +1,5 @@
 use fridgers_backend_config::Config;
-use fridgers_backend_use_case::interactor::FridgersRestInteractor;
+use fridgers_backend_use_case::Interactor;
 use rdb_gateway::InMemoryUserRepository;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -20,7 +20,7 @@ pub fn setup_logger(config: &Config) -> std::io::Result<()> {
 }
 
 /// 依存性の構築（DI Container）
-pub fn setup_dependencies() -> Arc<FridgersRestInteractor> {
+pub fn setup_dependencies() -> Arc<Interactor> {
     let repository = InMemoryUserRepository::new();
-    Arc::new(FridgersRestInteractor::new(Box::new(repository)))
+    Arc::new(Interactor::new(Box::new(repository)))
 }

@@ -1046,6 +1046,7 @@ dependencies = [
  "fridgers-backend-use-case",
  "serde",
  "serde_json",
+ "strum_macros",
 ]
 
 [[package]]

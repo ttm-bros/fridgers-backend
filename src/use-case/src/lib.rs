@@ -1,5 +1,7 @@
 mod error;
+pub mod dto;
 pub mod interactor;
 pub mod repository;
 
 pub use error::{Error, Result};
+pub use interactor::Interactor;

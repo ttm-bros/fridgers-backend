@@ -68,14 +68,8 @@ components:
     RegisterUserRequest:
       type: object
       required:
-        - id
         - name
       properties:
-        id:
-          type: string
-          format: uuid
-          description: User's unique identifier (UUID v4)
-          example: "550e8400-e29b-41d4-a716-446655440000"
         name:
           type: string
           minLength: 1
