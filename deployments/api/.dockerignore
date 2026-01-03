@@ -1,0 +1,32 @@
+# Git関連
+.git
+.gitignore
+
+# IDE/エディタ
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# 環境変数
+.env
+.env.*
+!.env.template
+
+# ドキュメント
+*.md
+!CLAUDE.md
+docs/
+
+# CI/CD
+.github/
+
+# その他
+deployments/
+*.log
