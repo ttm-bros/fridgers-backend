@@ -11,7 +11,7 @@ pub async fn register_user(
     req: web::Json<schema::RegisterUserRequest>,
 ) -> Result<HttpResponse> {
     // ドメインオブジェクトの生成
-    let user_id = UserId::try_from(req.id.clone()).map_err(use_case::Error::from)?;
+    let user_id = UserId::new();
     let user_name = UserName::try_from(req.name.clone()).map_err(use_case::Error::from)?;
 
     // use-case DTOを作成
