@@ -1,8 +1,8 @@
 use crate::Result;
-use crate::interactor::FridgersRestInteractor;
+use crate::interactor::Interactor;
 use fridgers_backend_domain::user::{User, UserId, UserName};
 
-impl FridgersRestInteractor {
+impl Interactor {
     /// ユーザーを登録する
     pub fn handle_register_user(&self, user_id: UserId, user_name: UserName) -> Result<User> {
         // ユーザーエンティティを作成

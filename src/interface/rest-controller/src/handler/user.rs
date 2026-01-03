@@ -2,12 +2,12 @@ use crate::error::Result;
 use crate::schema::user::register::{RegisterUserRequest, RegisterUserResponse};
 use actix_web::{HttpResponse, post, web};
 use fridgers_backend_domain::user::{UserId, UserName};
-use fridgers_backend_use_case::{self as use_case, interactor::FridgersRestInteractor};
+use fridgers_backend_use_case::{self as use_case, Interactor};
 use std::sync::Arc;
 
 #[post("/v1/users")]
 pub async fn register_user(
-    interactor: web::Data<Arc<FridgersRestInteractor>>,
+    interactor: web::Data<Arc<Interactor>>,
     req: web::Json<RegisterUserRequest>,
 ) -> Result<HttpResponse> {
     // ドメインオブジェクトの生成
