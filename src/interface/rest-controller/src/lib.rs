@@ -1,6 +1,7 @@
-pub mod handler;
+mod handler;
 pub mod router;
 pub mod schema;
+mod error;
 
 // ルーティング設定を公開
 pub use router::health::configure as configure_health;
