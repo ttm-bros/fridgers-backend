@@ -1,4 +1,6 @@
+use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use fridgers_backend_use_case as use_case;
+use serde_json::json;
 
 pub type Result<A> = std::result::Result<A, Error>;
 
@@ -26,6 +28,21 @@ pub enum Error {
     ExternalServer(String),
 }
 
+impl Error {
+    /// エラーに対応するHTTPステータスコードを返す
+    pub fn status_code(&self) -> StatusCode {
+        match self {
+            Error::InvalidArgument(_) => StatusCode::BAD_REQUEST,
+            Error::Unauthorized(_) => StatusCode::UNAUTHORIZED,
+            Error::Forbidden(_) => StatusCode::FORBIDDEN,
+            Error::NotFound(_) => StatusCode::NOT_FOUND,
+            Error::AlreadyExist(_) => StatusCode::CONFLICT,
+            Error::PreconditionFailed(_) => StatusCode::PRECONDITION_FAILED,
+            Error::ExternalServer(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+}
+
 impl From<use_case::Error> for Error {
     fn from(err: use_case::Error) -> Self {
         match err {
@@ -37,5 +54,17 @@ impl From<use_case::Error> for Error {
             use_case::Error::PreconditionFailed(msg) => Error::PreconditionFailed(msg),
             use_case::Error::ExternalServer(msg) => Error::ExternalServer(msg),
         }
+    }
+}
+
+impl ResponseError for Error {
+    fn status_code(&self) -> StatusCode {
+        self.status_code()
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::build(self.status_code()).json(json!({
+            "error": self.to_string()
+        }))
     }
 }
