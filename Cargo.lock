@@ -89,6 +89,7 @@ version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92589714878ca59a7626ea19734f0e07a6a875197eec751bb5d3f99e64998c63"
 dependencies = [
+ "actix-macros",
  "futures-core",
  "tokio",
 ]
@@ -690,15 +691,18 @@ name = "fridgers-backend-rest-server"
 version = "0.1.0"
 dependencies = [
  "actix-http",
+ "actix-rt",
  "actix-web",
  "fridgers-backend-config",
  "fridgers-backend-use-case",
  "rdb-gateway",
  "rest-controller",
+ "serde_json",
  "sqlx",
  "tracing",
  "tracing-log",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
