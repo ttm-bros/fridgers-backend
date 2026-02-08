@@ -13,3 +13,4 @@ path = "src/main.rs"
 [dependencies]
 fridgers-backend-domain = { workspace = true }
 fridgers-backend-use-case = { workspace = true }
+sqlx = { workspace = true }
