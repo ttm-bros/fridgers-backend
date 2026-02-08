@@ -6,10 +6,6 @@ edition = "2024"
 [lib]
 path = "src/lib.rs"
 
-[[bin]]
-name = "rdb-gateway"
-path = "src/main.rs"
-
 [dependencies]
 fridgers-backend-domain = { workspace = true }
 fridgers-backend-use-case = { workspace = true }

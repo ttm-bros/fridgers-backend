@@ -1,3 +1,3 @@
-pub mod repository;
+pub mod repositories;
 
-pub use repository::PostgresRepository;
+pub use repositories::PostgresRepository;

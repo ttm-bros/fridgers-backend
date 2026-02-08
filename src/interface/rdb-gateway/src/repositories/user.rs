@@ -1,19 +1,8 @@
+use crate::repositories::PostgresRepository;
 use fridgers_backend_domain::user::{User, UserId, UserName};
-use fridgers_backend_use_case::repository::Repository;
 use fridgers_backend_use_case::{Error, Result};
-use sqlx::{FromRow, PgPool};
+use sqlx::FromRow;
 use uuid::Uuid;
-
-/// PostgreSQLリポジトリ実装
-pub struct PostgresRepository {
-    pool: PgPool,
-}
-
-impl PostgresRepository {
-    pub fn new(pool: PgPool) -> Self {
-        Self { pool }
-    }
-}
 
 /// SQLの結果をマッピングするための内部構造体
 #[derive(FromRow)]
@@ -22,8 +11,8 @@ struct UserRow {
     name: String,
 }
 
-impl Repository for PostgresRepository {
-    async fn save_user(&self, user: &User) -> Result<()> {
+impl PostgresRepository {
+    pub async fn save_user(&self, user: &User) -> Result<()> {
         sqlx::query("INSERT INTO users (id, name) VALUES ($1, $2)")
             .bind(user.id.value())
             .bind(user.name.value())
@@ -34,7 +23,7 @@ impl Repository for PostgresRepository {
         Ok(())
     }
 
-    async fn find_user_by_id(&self, id: &str) -> Result<Option<User>> {
+    pub async fn find_user_by_id(&self, id: &str) -> Result<Option<User>> {
         let uuid = Uuid::parse_str(id)
             .map_err(|e| Error::InvalidArgument(format!("Invalid UUID format: {}", e)))?;
 
@@ -54,7 +43,7 @@ impl Repository for PostgresRepository {
         }
     }
 
-    async fn delete_user(&self, id: &str) -> Result<()> {
+    pub async fn delete_user(&self, id: &str) -> Result<()> {
         let uuid = Uuid::parse_str(id)
             .map_err(|e| Error::InvalidArgument(format!("Invalid UUID format: {}", e)))?;
 
