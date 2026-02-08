@@ -1,15 +1,8 @@
+use crate::dto::user::UserRow;
 use crate::repositories::PostgresRepository;
-use fridgers_backend_domain::user::{User, UserId, UserName};
+use fridgers_backend_domain::user::User;
 use fridgers_backend_use_case::{Error, Result};
-use sqlx::FromRow;
 use uuid::Uuid;
-
-/// SQLの結果をマッピングするための内部構造体
-#[derive(FromRow)]
-struct UserRow {
-    id: Uuid,
-    name: String,
-}
 
 impl PostgresRepository {
     pub async fn save_user(&self, user: &User) -> Result<()> {
@@ -34,11 +27,7 @@ impl PostgresRepository {
             .map_err(|e| Error::ExternalServer(format!("Failed to find user: {}", e)))?;
 
         match row {
-            Some(row) => {
-                let user_id = UserId::from(row.id);
-                let user_name = UserName::try_from(row.name).map_err(Error::from)?;
-                Ok(Some(User::new(user_id, user_name)))
-            }
+            Some(row) => row.into_domain().map(Some),
             None => Ok(None),
         }
     }
