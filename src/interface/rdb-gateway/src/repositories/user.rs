@@ -27,7 +27,7 @@ impl PostgresRepository {
             .map_err(|e| Error::ExternalServer(format!("Failed to find user: {}", e)))?;
 
         match row {
-            Some(row) => row.into_domain().map(Some),
+            Some(row) => User::try_from(row).map(Some),
             None => Ok(None),
         }
     }

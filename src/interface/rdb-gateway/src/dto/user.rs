@@ -1,5 +1,5 @@
 use fridgers_backend_domain::user::{User, UserId, UserName};
-use fridgers_backend_use_case::Result;
+use fridgers_backend_use_case::Error;
 use sqlx::FromRow;
 use uuid::Uuid;
 
@@ -10,11 +10,12 @@ pub struct UserRow {
     pub name: String,
 }
 
-impl UserRow {
-    /// ドメインモデルのUserに変換する
-    pub fn into_domain(self) -> Result<User> {
-        let user_id = UserId::from(self.id);
-        let user_name = UserName::try_from(self.name)?;
+impl TryFrom<UserRow> for User {
+    type Error = Error;
+
+    fn try_from(row: UserRow) -> Result<Self, Self::Error> {
+        let user_id = UserId::from(row.id);
+        let user_name = UserName::try_from(row.name)?;
         Ok(User::new(user_id, user_name))
     }
 }
