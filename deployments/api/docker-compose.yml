@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fridgers-backend-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-fridgers}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-fridgers_password}
+      - POSTGRES_DB=${POSTGRES_DB:-fridgers}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fridgers}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - fridgers-network
+
+  api:
+    build:
+      context: ../../
+      dockerfile: deployments/api/Dockerfile
+    container_name: fridgers-backend-api
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - SERVER_URL=${SERVER_URL:-http://0.0.0.0}
+      - SERVER_PORT=${SERVER_PORT:-8080}
+      - DB_URL=${DB_URL:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-fridgers}:${POSTGRES_PASSWORD:-fridgers_password}@postgres:5432/${POSTGRES_DB:-fridgers}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fridgers-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  fridgers-network:
+    driver: bridge
