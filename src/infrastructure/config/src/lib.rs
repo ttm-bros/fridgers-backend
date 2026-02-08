@@ -27,15 +27,7 @@ pub struct ServerConfig {
 
 #[derive(Debug)]
 pub struct DbConfig {
-    pub url: String,
-    pub port: u16,
     pub database_url: String,
-}
-
-#[derive(Deserialize)]
-struct DbEnvConfig {
-    url: String,
-    port: u16,
 }
 
 impl Config {
@@ -44,15 +36,10 @@ impl Config {
 
         let log = prefixed("LOG_").from_env::<LogConfig>()?;
         let server = prefixed("SERVER_").from_env::<ServerConfig>()?;
-        let db_env = prefixed("DB_").from_env::<DbEnvConfig>()?;
         let database_url = std::env::var("DATABASE_URL")
             .map_err(|e| Error::Load(format!("DATABASE_URL: {}", e)))?;
 
-        let db = DbConfig {
-            url: db_env.url,
-            port: db_env.port,
-            database_url,
-        };
+        let db = DbConfig { database_url };
 
         Ok(Self {
             log,
