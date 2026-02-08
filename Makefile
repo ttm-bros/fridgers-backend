@@ -1,4 +1,4 @@
-.PHONY: help up down restart build logs clean dev test check fmt clippy db-shell db-reset db-migrate db-rollback db-migrate-info
+.PHONY: help up down restart logs clean dev test check fmt clippy db-shell db-reset db-migrate db-rollback db-migrate-info api-build api-up api-down
 
 # デフォルトターゲット
 .DEFAULT_GOAL := help
@@ -10,34 +10,48 @@ RESET := \033[0m
 help: ## ヘルプを表示
 	@echo "$(BLUE)利用可能なコマンド:$(RESET)"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  $(BLUE)%-15s$(RESET) %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}'
 
 # ========================================
-# Docker Compose コマンド
+# ローカル開発（DB + cargo run）
 # ========================================
 
-up: ## Docker Composeでコンテナを起動
-	cd deployments/api && docker-compose up -d
-	@echo "$(BLUE)コンテナが起動しました$(RESET)"
-	@echo "API: http://localhost:8080"
+up: ## PostgreSQLコンテナを起動
+	cd deployments/db && docker compose up -d
+	@echo "$(BLUE)PostgreSQLが起動しました$(RESET)"
 	@echo "PostgreSQL: localhost:5432"
 
-down: ## コンテナを停止
-	cd deployments/api && docker-compose down
-	@echo "$(BLUE)コンテナを停止しました$(RESET)"
+down: ## PostgreSQLコンテナを停止
+	cd deployments/db && docker compose down
+	@echo "$(BLUE)PostgreSQLを停止しました$(RESET)"
 
-restart: down up ## コンテナを再起動
+restart: down up ## PostgreSQLコンテナを再起動
 
-build: ## Dockerイメージをビルド
-	cd deployments/api && docker-compose build
-	@echo "$(BLUE)イメージのビルドが完了しました$(RESET)"
+logs: ## PostgreSQLのログを表示
+	cd deployments/db && docker compose logs -f
 
-logs: ## コンテナのログを表示
-	cd deployments/api && docker-compose logs -f
-
-clean: ## コンテナとボリュームを削除
-	cd deployments/api && docker-compose down -v
+clean: ## PostgreSQLコンテナとボリュームを削除
+	cd deployments/db && docker compose down -v
 	@echo "$(BLUE)コンテナとボリュームを削除しました$(RESET)"
+
+dev: ## ローカルでRustサーバーを起動
+	cargo run --bin rest-server
+
+# ========================================
+# APIコンテナ（ビルド・デプロイ用）
+# ========================================
+
+api-build: ## APIのDockerイメージをビルド
+	cd deployments/api && docker compose build
+	@echo "$(BLUE)APIイメージのビルドが完了しました$(RESET)"
+
+api-up: ## APIコンテナを起動
+	cd deployments/api && docker compose up -d
+	@echo "$(BLUE)APIコンテナが起動しました$(RESET)"
+
+api-down: ## APIコンテナを停止
+	cd deployments/api && docker compose down
+	@echo "$(BLUE)APIコンテナを停止しました$(RESET)"
 
 # ========================================
 # データベースコマンド
@@ -46,10 +60,7 @@ clean: ## コンテナとボリュームを削除
 db-shell: ## PostgreSQLに接続
 	docker exec -it fridgers-backend-postgres psql -U fridgers -d fridgers
 
-db-reset: ## データベースをリセット
-	cd deployments/api && docker-compose down -v
-	cd deployments/api && docker-compose up -d postgres
-	@echo "$(BLUE)データベースをリセットしました$(RESET)"
+db-reset: clean up db-migrate ## データベースをリセットしマイグレーション実行
 
 db-migrate: ## マイグレーションを実行
 	sqlx migrate run --source deployments/db/migrations
@@ -63,11 +74,8 @@ db-migrate-info: ## マイグレーションの適用状況を確認
 	sqlx migrate info --source deployments/db/migrations
 
 # ========================================
-# ローカル開発コマンド
+# コード品質
 # ========================================
-
-dev: ## ローカルでRustサーバーを起動
-	cargo run --bin rest-server
 
 test: ## テストを実行
 	cargo test
