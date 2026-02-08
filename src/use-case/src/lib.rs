@@ -5,3 +5,4 @@ pub mod repository;
 
 pub use error::{Error, Result};
 pub use interactor::Interactor;
+pub use repository::Repository;

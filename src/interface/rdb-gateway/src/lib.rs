@@ -1,3 +1,4 @@
-pub mod repository;
+mod dto;
+pub mod repositories;
 
-pub use repository::InMemoryUserRepository;
+pub use repositories::PostgresRepository;

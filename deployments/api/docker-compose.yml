@@ -32,8 +32,6 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SERVER_URL=${SERVER_URL:-http://0.0.0.0}
       - SERVER_PORT=${SERVER_PORT:-8080}
-      - DB_URL=${DB_URL:-postgres}
-      - DB_PORT=${DB_PORT:-5432}
       - DATABASE_URL=postgresql://${POSTGRES_USER:-fridgers}:${POSTGRES_PASSWORD:-fridgers_password}@postgres:5432/${POSTGRES_DB:-fridgers}
     depends_on:
       postgres:

@@ -1,4 +1,4 @@
-.PHONY: help up down restart build logs clean dev test check fmt clippy db-shell db-reset
+.PHONY: help up down restart build logs clean dev test check fmt clippy db-shell db-reset db-migrate db-rollback db-migrate-info
 
 # デフォルトターゲット
 .DEFAULT_GOAL := help
@@ -50,6 +50,17 @@ db-reset: ## データベースをリセット
 	cd deployments/api && docker-compose down -v
 	cd deployments/api && docker-compose up -d postgres
 	@echo "$(BLUE)データベースをリセットしました$(RESET)"
+
+db-migrate: ## マイグレーションを実行
+	sqlx migrate run --source deployments/db/migrations
+	@echo "$(BLUE)マイグレーションを実行しました$(RESET)"
+
+db-rollback: ## マイグレーションをロールバック
+	sqlx migrate revert --source deployments/db/migrations
+	@echo "$(BLUE)マイグレーションをロールバックしました$(RESET)"
+
+db-migrate-info: ## マイグレーションの適用状況を確認
+	sqlx migrate info --source deployments/db/migrations
 
 # ========================================
 # ローカル開発コマンド
