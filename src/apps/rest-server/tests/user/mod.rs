@@ -1,11 +1,11 @@
 use actix_web::test;
 use serde_json::{json, Value};
 
-use super::*;
+use super::helper;
 
 #[actix_rt::test]
 async fn test_register_user_success() {
-    let (app, pool) = create_test_app().await;
+    let (app, pool) = helper::create_test_app().await;
 
     let req = test::TestRequest::post()
         .uri("/v1/users")
@@ -34,12 +34,12 @@ async fn test_register_user_success() {
         .expect("User should exist in database");
     assert_eq!(row.0, "テストユーザー");
 
-    cleanup_users(&pool).await;
+    helper::cleanup_users(&pool).await;
 }
 
 #[actix_rt::test]
 async fn test_register_user_empty_name_returns_400() {
-    let (app, pool) = create_test_app().await;
+    let (app, pool) = helper::create_test_app().await;
 
     let req = test::TestRequest::post()
         .uri("/v1/users")
@@ -62,5 +62,5 @@ async fn test_register_user_empty_name_returns_400() {
         .expect("Failed to count users");
     assert_eq!(count.0, 0);
 
-    cleanup_users(&pool).await;
+    helper::cleanup_users(&pool).await;
 }
