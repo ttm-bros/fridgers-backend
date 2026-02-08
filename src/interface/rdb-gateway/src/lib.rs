@@ -1,3 +1,3 @@
 pub mod repository;
 
-pub use repository::InMemoryUserRepository;
+pub use repository::PostgresRepository;

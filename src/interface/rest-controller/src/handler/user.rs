@@ -1,13 +1,12 @@
 use crate::error::Result;
 use crate::schema::user::register::{self as schema};
-use actix_web::{HttpResponse, post, web};
+use actix_web::{HttpResponse, web};
 use fridgers_backend_domain::user::{UserId, UserName};
-use fridgers_backend_use_case::{self as use_case, Interactor, dto::user::register as dto};
+use fridgers_backend_use_case::{self as use_case, Interactor, Repository, dto::user::register as dto};
 use std::sync::Arc;
 
-#[post("/v1/users")]
-pub async fn register_user(
-    interactor: web::Data<Arc<Interactor>>,
+pub async fn register_user<R: Repository + 'static>(
+    interactor: web::Data<Arc<Interactor<R>>>,
     req: web::Json<schema::RegisterUserRequest>,
 ) -> Result<HttpResponse> {
     // ドメインオブジェクトの生成
@@ -18,7 +17,7 @@ pub async fn register_user(
     let use_case_request = dto::RegisterUserRequest::new(user_id, user_name);
 
     // interactorを通じてユースケースを実行
-    let user = interactor.handle_register_user(use_case_request)?;
+    let user = interactor.handle_register_user(use_case_request).await?;
 
     let response = schema::RegisterUserResponse::from(user);
     Ok(HttpResponse::Created().json(response))

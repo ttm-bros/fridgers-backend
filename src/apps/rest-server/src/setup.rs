@@ -1,6 +1,7 @@
 use fridgers_backend_config::Config;
 use fridgers_backend_use_case::Interactor;
-use rdb_gateway::InMemoryUserRepository;
+use rdb_gateway::PostgresRepository;
+use sqlx::PgPool;
 use std::str::FromStr;
 use std::sync::Arc;
 use tracing::Level;
@@ -20,7 +21,11 @@ pub fn setup_logger(config: &Config) -> std::io::Result<()> {
 }
 
 /// 依存性の構築（DI Container）
-pub fn setup_dependencies() -> Arc<Interactor> {
-    let repository = InMemoryUserRepository::new();
-    Arc::new(Interactor::new(Box::new(repository)))
+pub async fn setup_dependencies(config: &Config) -> std::io::Result<Arc<Interactor<PostgresRepository>>> {
+    let pool = PgPool::connect(&config.db.database_url)
+        .await
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, format!("Failed to connect to database: {}", e)))?;
+
+    let repository = PostgresRepository::new(pool);
+    Ok(Arc::new(Interactor::new(repository)))
 }

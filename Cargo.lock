@@ -695,6 +695,7 @@ dependencies = [
  "fridgers-backend-use-case",
  "rdb-gateway",
  "rest-controller",
+ "sqlx",
  "tracing",
  "tracing-log",
  "tracing-subscriber",
@@ -1549,6 +1550,7 @@ dependencies = [
  "fridgers-backend-domain",
  "fridgers-backend-use-case",
  "sqlx",
+ "uuid",
 ]
 
 [[package]]

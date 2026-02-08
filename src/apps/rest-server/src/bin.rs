@@ -1,5 +1,6 @@
 use actix_web::{App, HttpServer, dev::Service, web};
 use fridgers_backend_rest_server::{app, setup};
+use rdb_gateway::PostgresRepository;
 use tracing::info_span;
 
 #[actix_web::main]
@@ -12,7 +13,7 @@ async fn main() -> std::io::Result<()> {
     setup::setup_logger(&config)?;
 
     // 依存性の構築
-    let interactor = setup::setup_dependencies();
+    let interactor = setup::setup_dependencies(&config).await?;
 
     // HTTPサーバーの起動
     HttpServer::new(move || {
@@ -36,7 +37,7 @@ async fn main() -> std::io::Result<()> {
             // アクセスログの追加
             .wrap(app::logger())
             // エンドポイントの設定
-            .configure(app::configure_routes)
+            .configure(app::configure_routes::<PostgresRepository>)
     })
     .bind((config.server.url.as_str(), config.server.port))?
     .run()

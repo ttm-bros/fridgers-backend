@@ -14,3 +14,4 @@ path = "src/main.rs"
 fridgers-backend-domain = { workspace = true }
 fridgers-backend-use-case = { workspace = true }
 sqlx = { workspace = true }
+uuid = { workspace = true }
