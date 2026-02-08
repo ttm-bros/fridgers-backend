@@ -22,3 +22,12 @@ sqlx = { workspace = true }
 tracing = { workspace = true }
 tracing-log = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+[[test]]
+name = "integration_test"
+path = "tests/lib.rs"
+
+[dev-dependencies]
+actix-rt = "2"
+serde_json = { workspace = true }
+uuid = { workspace = true }
