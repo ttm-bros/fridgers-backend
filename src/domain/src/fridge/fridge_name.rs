@@ -1,3 +1,3 @@
-use crate::name::define_name;
+use crate::name::define_string;
 
-define_name!(FridgeName, max = 50);
+define_string!(FridgeName, max = 50);

@@ -1,3 +1,3 @@
-use crate::name::define_name;
+use crate::name::define_string;
 
-define_name!(UserName, max = 25);
+define_string!(UserName, max = 25);

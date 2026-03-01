@@ -1,3 +1,3 @@
-use crate::name::define_name;
+use crate::name::define_string;
 
-define_name!(RawPassword, min = 10, max = 30);
+define_string!(RawPassword, min = 10, max = 30);

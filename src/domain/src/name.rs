@@ -9,22 +9,22 @@ pub(crate) fn default_char_allowed(c: char) -> bool {
 ///
 /// # 使い方
 /// ```ignore
-/// define_name!(UserName, max = 25);
+/// define_string!(UserName, max = 25);
 /// // → min=1, max=25, デフォルトバリデーター（英数字・スペース・ハイフン・アンダースコアのみ）
 ///
-/// define_name!(RawPassword, min = 10, max = 30);
+/// define_string!(RawPassword, min = 10, max = 30);
 /// // → min=10, max=30, デフォルトバリデーター
 ///
-/// define_name!(Tag, max = 20, validator = |c: char| c.is_ascii_alphanumeric());
+/// define_string!(Tag, max = 20, validator = |c: char| c.is_ascii_alphanumeric());
 /// // → min=1, max=20, カスタムバリデーター
 ///
-/// define_name!(Note, min = 0, max = 200, validator = |c: char| !c.is_control());
+/// define_string!(Note, min = 0, max = 200, validator = |c: char| !c.is_control());
 /// // → min=0, max=200, カスタムバリデーター
 /// ```
-macro_rules! define_name {
+macro_rules! define_string {
     // max のみ: デフォルトバリデーターで委譲
     ($t:ident, max = $max:expr) => {
-        $crate::name::define_name!(
+        $crate::name::define_string!(
             $t,
             min = 1,
             max = $max,
@@ -33,7 +33,7 @@ macro_rules! define_name {
     };
     // min + max: デフォルトバリデーターで委譲
     ($t:ident, min = $min:expr, max = $max:expr) => {
-        $crate::name::define_name!(
+        $crate::name::define_string!(
             $t,
             min = $min,
             max = $max,
@@ -42,7 +42,7 @@ macro_rules! define_name {
     };
     // max + カスタムバリデーター: min=1 で委譲
     ($t:ident, max = $max:expr, validator = $validator:expr) => {
-        $crate::name::define_name!($t, min = 1, max = $max, validator = $validator);
+        $crate::name::define_string!($t, min = 1, max = $max, validator = $validator);
     };
     // 全パラメーター指定: 実装本体
     ($t:ident, min = $min:expr, max = $max:expr, validator = $validator:expr) => {
@@ -89,4 +89,4 @@ macro_rules! define_name {
     };
 }
 
-pub(crate) use define_name;
+pub(crate) use define_string;
