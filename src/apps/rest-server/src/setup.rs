@@ -1,5 +1,6 @@
 use fridgers_backend_config::Config;
 use fridgers_backend_use_case::Interactor;
+use fridgers_backend_use_case::auth::JwtConfig;
 use rdb_gateway::PostgresRepository;
 use sqlx::PgPool;
 use std::str::FromStr;
@@ -26,6 +27,11 @@ pub async fn setup_dependencies(config: &Config) -> std::io::Result<Arc<Interact
         .await
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, format!("Failed to connect to database: {}", e)))?;
 
+    let jwt_config = JwtConfig {
+        secret: config.auth.jwt_secret.clone(),
+        expiry_hours: config.auth.jwt_expiry_hours,
+    };
+
     let repository = PostgresRepository::new(pool);
-    Ok(Arc::new(Interactor::new(repository)))
+    Ok(Arc::new(Interactor::new(repository, jwt_config)))
 }

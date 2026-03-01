@@ -13,6 +13,9 @@ pub trait Repository: Send + Sync {
     /// ユーザーを削除する
     fn delete_user(&self, id: &str) -> impl Future<Output = Result<()>> + Send;
 
+    /// メールアドレスでユーザーを検索する
+    fn find_user_by_email(&self, email: &str) -> impl Future<Output = Result<Option<User>>> + Send;
+
     /// 冷蔵庫を保存する
     fn save_fridge(&self, fridge: &Fridge) -> impl Future<Output = Result<()>> + Send;
 
