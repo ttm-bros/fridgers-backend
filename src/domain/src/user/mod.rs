@@ -1,6 +1,8 @@
+mod raw_password;
 mod user_id;
 mod user_name;
 
+pub use raw_password::RawPassword;
 pub use user_id::UserId;
 pub use user_name::UserName;
 
