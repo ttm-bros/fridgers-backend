@@ -1,18 +1,51 @@
+/// デフォルトの文字バリデーター。
+/// Unicode英数字・スペース・ハイフン・アンダースコアを許可する。
+/// 絵文字・特殊記号はデフォルトで禁止。
+pub(crate) fn default_char_allowed(c: char) -> bool {
+    c.is_alphanumeric() || matches!(c, ' ' | '-' | '_')
+}
+
 /// バリデーション付き文字列型を生成するマクロ。
 ///
 /// # 使い方
-/// ```
-/// define_name!(UserName, max = 25);              // min=1（空文字禁止）, max=25
-/// define_name!(FridgeName, max = 50);            // min=1（空文字禁止）, max=50
-/// define_name!(RawPassword, min = 10, max = 30); // min=10, max=30
+/// ```ignore
+/// define_name!(UserName, max = 25);
+/// // → min=1, max=25, デフォルトバリデーター（英数字・スペース・ハイフン・アンダースコアのみ）
+///
+/// define_name!(RawPassword, min = 10, max = 30);
+/// // → min=10, max=30, デフォルトバリデーター
+///
+/// define_name!(Tag, max = 20, validator = |c: char| c.is_ascii_alphanumeric());
+/// // → min=1, max=20, カスタムバリデーター
+///
+/// define_name!(Note, min = 0, max = 200, validator = |c: char| !c.is_control());
+/// // → min=0, max=200, カスタムバリデーター
 /// ```
 macro_rules! define_name {
-    // max のみ: min=1 として委譲
+    // max のみ: デフォルトバリデーターで委譲
     ($t:ident, max = $max:expr) => {
-        $crate::name::define_name!($t, min = 1, max = $max);
+        $crate::name::define_name!(
+            $t,
+            min = 1,
+            max = $max,
+            validator = $crate::name::default_char_allowed
+        );
     };
-    // min と max 両方指定: 実装本体
+    // min + max: デフォルトバリデーターで委譲
     ($t:ident, min = $min:expr, max = $max:expr) => {
+        $crate::name::define_name!(
+            $t,
+            min = $min,
+            max = $max,
+            validator = $crate::name::default_char_allowed
+        );
+    };
+    // max + カスタムバリデーター: min=1 で委譲
+    ($t:ident, max = $max:expr, validator = $validator:expr) => {
+        $crate::name::define_name!($t, min = 1, max = $max, validator = $validator);
+    };
+    // 全パラメーター指定: 実装本体
+    ($t:ident, min = $min:expr, max = $max:expr, validator = $validator:expr) => {
         #[derive(Debug, Clone, PartialEq)]
         pub struct $t {
             value: String,
@@ -39,6 +72,12 @@ macro_rules! define_name {
                     return Err($crate::error::Error::InvalidLengthRange(format!(
                         concat!(stringify!($t), " cannot exceed {} characters"),
                         $max,
+                    )));
+                }
+                if let Some(c) = value.chars().find(|&c| !$validator(c)) {
+                    return Err($crate::error::Error::InvalidFormat(format!(
+                        concat!(stringify!($t), " contains an invalid character: '{}'"),
+                        c,
                     )));
                 }
                 Ok(Self {
