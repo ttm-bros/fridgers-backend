@@ -22,6 +22,11 @@ impl TryFrom<String> for FridgeName {
                 "Fridge name cannot be empty".to_string(),
             ));
         }
+        if name.len() > 50 {
+            return Err(Error::InvalidLengthRange(
+                "Fridge name cannot exceed 50 characters".to_string(),
+            ));
+        }
         Ok(Self {
             value: name,
             _hide_default_constructor: PhantomData,
