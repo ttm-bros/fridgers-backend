@@ -1,3 +1,4 @@
+pub mod fridge;
 pub mod user;
 
 use crate::repository::Repository;
