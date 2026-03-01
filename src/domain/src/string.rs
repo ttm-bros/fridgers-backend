@@ -24,25 +24,25 @@ pub(crate) fn default_char_allowed(c: char) -> bool {
 macro_rules! define_string {
     // max のみ: デフォルトバリデーターで委譲
     ($t:ident, max = $max:expr) => {
-        $crate::name::define_string!(
+        $crate::string::define_string!(
             $t,
             min = 1,
             max = $max,
-            validator = $crate::name::default_char_allowed
+            validator = $crate::string::default_char_allowed
         );
     };
     // min + max: デフォルトバリデーターで委譲
     ($t:ident, min = $min:expr, max = $max:expr) => {
-        $crate::name::define_string!(
+        $crate::string::define_string!(
             $t,
             min = $min,
             max = $max,
-            validator = $crate::name::default_char_allowed
+            validator = $crate::string::default_char_allowed
         );
     };
     // max + カスタムバリデーター: min=1 で委譲
     ($t:ident, max = $max:expr, validator = $validator:expr) => {
-        $crate::name::define_string!($t, min = 1, max = $max, validator = $validator);
+        $crate::string::define_string!($t, min = 1, max = $max, validator = $validator);
     };
     // 全パラメーター指定: 実装本体
     ($t:ident, min = $min:expr, max = $max:expr, validator = $validator:expr) => {
