@@ -349,7 +349,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118"
 dependencies = [
  "iana-time-zone",
+ "js-sys",
  "num-traits",
+ "serde",
+ "wasm-bindgen",
  "windows-link",
 ]
 
@@ -682,6 +685,7 @@ dependencies = [
 name = "fridgers-backend-domain"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "strum_macros",
  "uuid",
 ]
@@ -709,6 +713,7 @@ dependencies = [
 name = "fridgers-backend-use-case"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "fridgers-backend-domain",
  "strum_macros",
 ]
@@ -1551,6 +1556,7 @@ dependencies = [
 name = "rdb-gateway"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "fridgers-backend-domain",
  "fridgers-backend-use-case",
  "sqlx",
@@ -1615,11 +1621,13 @@ name = "rest-controller"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "chrono",
  "fridgers-backend-domain",
  "fridgers-backend-use-case",
  "serde",
  "serde_json",
  "strum_macros",
+ "uuid",
 ]
 
 [[package]]

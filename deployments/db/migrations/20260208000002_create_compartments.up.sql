@@ -1,0 +1,7 @@
+CREATE TABLE compartments (
+    id UUID PRIMARY KEY,
+    fridge_id UUID NOT NULL REFERENCES fridges(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

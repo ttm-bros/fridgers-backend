@@ -5,7 +5,9 @@ use fridgers_backend_use_case::Repository;
 pub fn configure_routes<R: Repository + 'static>(cfg: &mut web::ServiceConfig) {
     cfg.configure(rest_controller::configure_health)
         .configure(rest_controller::configure_users::<R>)
-        .configure(rest_controller::configure_fridges::<R>);
+        .configure(rest_controller::configure_fridges::<R>)
+        .configure(rest_controller::configure_compartments::<R>)
+        .configure(rest_controller::configure_items::<R>);
 }
 
 /// アクセスログのミドルウェアを取得
