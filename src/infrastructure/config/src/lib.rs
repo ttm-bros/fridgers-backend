@@ -11,6 +11,7 @@ pub struct Config {
     pub log: LogConfig,
     pub server: ServerConfig,
     pub db: DbConfig,
+    pub auth: AuthConfig,
     _hide_default_constructor: PhantomData<()>,
 }
 
@@ -30,6 +31,12 @@ pub struct DbConfig {
     pub database_url: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct AuthConfig {
+    pub jwt_secret: String,
+    pub jwt_expiry_hours: u64,
+}
+
 impl Config {
     pub fn from_env() -> Result<Self> {
         dotenv()?;
@@ -38,6 +45,7 @@ impl Config {
         let server = prefixed("SERVER_").from_env::<ServerConfig>()?;
         let database_url = std::env::var("DATABASE_URL")
             .map_err(|e| Error::Load(format!("DATABASE_URL: {}", e)))?;
+        let auth = prefixed("AUTH_").from_env::<AuthConfig>()?;
 
         let db = DbConfig { database_url };
 
@@ -45,6 +53,7 @@ impl Config {
             log,
             server,
             db,
+            auth,
             _hide_default_constructor: PhantomData,
         })
     }
