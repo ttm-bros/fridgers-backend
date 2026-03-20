@@ -1,3 +1,4 @@
+pub mod auth;
 pub mod compartment;
 pub mod fridge;
 pub mod item;

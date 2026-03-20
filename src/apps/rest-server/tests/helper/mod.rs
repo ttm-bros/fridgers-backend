@@ -1,6 +1,7 @@
 use actix_web::{App, test, web};
 use fridgers_backend_rest_server::app;
 use fridgers_backend_use_case::Interactor;
+use fridgers_backend_use_case::auth::JwtConfig;
 use rdb_gateway::PostgresRepository;
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -19,7 +20,11 @@ async fn create_test_pool() -> PgPool {
 pub async fn create_test_app() -> (impl actix_web::dev::Service<actix_http::Request, Response = actix_web::dev::ServiceResponse, Error = actix_web::Error>, PgPool) {
     let pool = create_test_pool().await;
     let repository = PostgresRepository::new(pool.clone());
-    let interactor = Arc::new(Interactor::new(repository));
+    let jwt_config = JwtConfig {
+        secret: "test-secret-key".to_string(),
+        expiry_hours: 24,
+    };
+    let interactor = Arc::new(Interactor::new(repository, jwt_config));
 
     let app = test::init_service(
         App::new()

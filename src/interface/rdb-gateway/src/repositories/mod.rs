@@ -35,6 +35,10 @@ impl Repository for PostgresRepository {
         self.delete_user(id).await
     }
 
+    async fn find_user_by_email(&self, email: &str) -> Result<Option<User>> {
+        self.find_user_by_email(email).await
+    }
+
     async fn save_fridge(&self, fridge: &Fridge) -> Result<()> {
         self.save_fridge(fridge).await
     }

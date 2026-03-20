@@ -7,7 +7,8 @@ pub fn configure_routes<R: Repository + 'static>(cfg: &mut web::ServiceConfig) {
         .configure(rest_controller::configure_users::<R>)
         .configure(rest_controller::configure_fridges::<R>)
         .configure(rest_controller::configure_compartments::<R>)
-        .configure(rest_controller::configure_items::<R>);
+        .configure(rest_controller::configure_items::<R>)
+        .configure(rest_controller::configure_auth::<R>);
 }
 
 /// アクセスログのミドルウェアを取得

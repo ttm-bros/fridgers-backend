@@ -9,7 +9,11 @@ async fn test_register_user_success() {
 
     let req = test::TestRequest::post()
         .uri("/v1/users")
-        .set_json(json!({"name": "テストユーザー"}))
+        .set_json(json!({
+            "name": "テストユーザー",
+            "email": "test@example.com",
+            "password": "password123"
+        }))
         .to_request();
 
     let resp = test::call_service(&app, req).await;
@@ -43,7 +47,11 @@ async fn test_register_user_empty_name_returns_400() {
 
     let req = test::TestRequest::post()
         .uri("/v1/users")
-        .set_json(json!({"name": ""}))
+        .set_json(json!({
+            "name": "",
+            "email": "test@example.com",
+            "password": "password123"
+        }))
         .to_request();
 
     let resp = test::call_service(&app, req).await;
@@ -61,6 +69,39 @@ async fn test_register_user_empty_name_returns_400() {
         .await
         .expect("Failed to count users");
     assert_eq!(count.0, 0);
+
+    helper::cleanup_users(&pool).await;
+}
+
+#[actix_rt::test]
+async fn test_register_user_duplicate_email_returns_409() {
+    let (app, pool) = helper::create_test_app().await;
+
+    // 1人目のユーザー登録
+    let req = test::TestRequest::post()
+        .uri("/v1/users")
+        .set_json(json!({
+            "name": "ユーザー1",
+            "email": "duplicate@example.com",
+            "password": "password123"
+        }))
+        .to_request();
+    let resp = test::call_service(&app, req).await;
+    assert_eq!(resp.status().as_u16(), 201);
+
+    // 同じメールアドレスで2人目を登録
+    let req = test::TestRequest::post()
+        .uri("/v1/users")
+        .set_json(json!({
+            "name": "ユーザー2",
+            "email": "duplicate@example.com",
+            "password": "password456"
+        }))
+        .to_request();
+    let resp = test::call_service(&app, req).await;
+
+    // 409 Conflictを確認
+    assert_eq!(resp.status().as_u16(), 409);
 
     helper::cleanup_users(&pool).await;
 }
