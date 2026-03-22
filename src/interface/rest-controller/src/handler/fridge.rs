@@ -28,8 +28,8 @@ pub async fn get_fridge<R: Repository + 'static>(
     path: web::Path<String>,
 ) -> Result<HttpResponse> {
     let fridge_id = path.into_inner();
-    let fridge = interactor.handle_get_fridge(&fridge_id).await?;
-    let response = get_schema::GetFridgeResponse::from(fridge);
+    let fridge_with_compartments = interactor.handle_get_fridge(&fridge_id).await?;
+    let response = get_schema::GetFridgeResponse::from(fridge_with_compartments);
     Ok(HttpResponse::Ok().json(response))
 }
 
