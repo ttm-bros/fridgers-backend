@@ -1,0 +1,892 @@
+openapi: 3.0.3
+info:
+  title: Fridgers API
+  description: スマート冷蔵庫とその内容物を管理するためのREST API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/v1
+    description: ローカル開発サーバー
+
+security:
+  - BearerAuth: []
+
+paths:
+  /users:
+    post:
+      summary: ユーザー登録
+      operationId: registerUser
+      tags:
+        - User
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserRequest"
+      responses:
+        "201":
+          description: ユーザー登録成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterUserResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: メールアドレスが既に登録済み
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      summary: ログイン（JWT取得）
+      operationId: login
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: メールアドレスまたはパスワードが不正
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges:
+    post:
+      summary: 冷蔵庫作成
+      operationId: createFridge
+      tags:
+        - Fridge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFridgeRequest"
+      responses:
+        "201":
+          description: 冷蔵庫作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateFridgeResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: オーナーユーザーが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges/{fridge_id}:
+    get:
+      summary: 冷蔵庫取得（コンパートメント・アイテム含む）
+      operationId: getFridge
+      tags:
+        - Fridge
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+      responses:
+        "200":
+          description: 冷蔵庫取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetFridgeResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: 冷蔵庫が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      summary: 冷蔵庫削除
+      operationId: deleteFridge
+      tags:
+        - Fridge
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+      responses:
+        "204":
+          description: 冷蔵庫削除成功
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: 冷蔵庫が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges/{fridge_id}/compartments:
+    post:
+      summary: コンパートメント作成
+      operationId: createCompartment
+      tags:
+        - Compartment
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCompartmentRequest"
+      responses:
+        "201":
+          description: コンパートメント作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateCompartmentResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: 冷蔵庫が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges/{fridge_id}/compartments/{compartment_id}:
+    put:
+      summary: コンパートメント更新
+      operationId: updateCompartment
+      tags:
+        - Compartment
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+        - $ref: "#/components/parameters/CompartmentId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCompartmentRequest"
+      responses:
+        "200":
+          description: コンパートメント更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateCompartmentResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: コンパートメントが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "412":
+          description: コンパートメントが指定の冷蔵庫に属していない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      summary: コンパートメント削除
+      operationId: deleteCompartment
+      tags:
+        - Compartment
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+        - $ref: "#/components/parameters/CompartmentId"
+      responses:
+        "204":
+          description: コンパートメント削除成功
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: コンパートメントが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "412":
+          description: コンパートメントが指定の冷蔵庫に属していない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges/{fridge_id}/compartments/{compartment_id}/items:
+    post:
+      summary: アイテム作成
+      operationId: createItem
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+        - $ref: "#/components/parameters/CompartmentId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemRequest"
+      responses:
+        "201":
+          description: アイテム作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateItemResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: コンパートメントが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "412":
+          description: コンパートメントが指定の冷蔵庫に属していない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /fridges/{fridge_id}/compartments/{compartment_id}/items/{item_id}:
+    put:
+      summary: アイテム更新
+      operationId: updateItem
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+        - $ref: "#/components/parameters/CompartmentId"
+        - $ref: "#/components/parameters/ItemId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemRequest"
+      responses:
+        "200":
+          description: アイテム更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateItemResponse"
+        "400":
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "412":
+          description: アイテムが指定のコンパートメント・冷蔵庫に属していない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      summary: アイテム削除
+      operationId: deleteItem
+      tags:
+        - Item
+      parameters:
+        - $ref: "#/components/parameters/FridgeId"
+        - $ref: "#/components/parameters/CompartmentId"
+        - $ref: "#/components/parameters/ItemId"
+      responses:
+        "204":
+          description: アイテム削除成功
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "412":
+          description: アイテムが指定のコンパートメント・冷蔵庫に属していない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    FridgeId:
+      name: fridge_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: 冷蔵庫ID
+    CompartmentId:
+      name: compartment_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: コンパートメントID
+    ItemId:
+      name: item_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: アイテムID
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+
+    RegisterUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 25
+          description: ユーザー名（英数字・スペース・ハイフン・アンダースコア）
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        password:
+          type: string
+          minLength: 10
+          maxLength: 30
+          description: パスワード（英数字・スペース・ハイフン・アンダースコア）
+
+    RegisterUserResponse:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ユーザーID
+        name:
+          type: string
+          description: ユーザー名
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        password:
+          type: string
+          description: パスワード
+
+    LoginResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: JWTアクセストークン
+        token_type:
+          type: string
+          enum:
+            - Bearer
+          description: トークン種別
+
+    CreateFridgeRequest:
+      type: object
+      required:
+        - name
+        - owner_user_id
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: 冷蔵庫名（英数字・スペース・ハイフン・アンダースコア）
+        owner_user_id:
+          type: string
+          format: uuid
+          description: オーナーユーザーID
+
+    CreateFridgeResponse:
+      type: object
+      required:
+        - id
+        - name
+        - owner_user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 冷蔵庫ID
+        name:
+          type: string
+          description: 冷蔵庫名
+        owner_user_id:
+          type: string
+          format: uuid
+          description: オーナーユーザーID
+
+    GetFridgeResponse:
+      type: object
+      required:
+        - id
+        - name
+        - owner_user_id
+        - compartments
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 冷蔵庫ID
+        name:
+          type: string
+          description: 冷蔵庫名
+        owner_user_id:
+          type: string
+          format: uuid
+          description: オーナーユーザーID
+        compartments:
+          type: array
+          items:
+            $ref: "#/components/schemas/CompartmentWithItems"
+
+    CompartmentWithItems:
+      type: object
+      required:
+        - id
+        - name
+        - items
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: コンパートメントID
+        name:
+          type: string
+          description: コンパートメント名
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemDetail"
+
+    ItemDetail:
+      type: object
+      required:
+        - id
+        - name
+        - quantity
+        - unit
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: アイテムID
+        name:
+          type: string
+          description: アイテム名
+        quantity:
+          type: number
+          format: double
+          description: 数量
+        unit:
+          type: string
+          description: 単位
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+          description: 賞味期限（YYYY-MM-DD）
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時（ISO 8601 UTC）
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時（ISO 8601 UTC）
+
+    CreateCompartmentRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: コンパートメント名（制御文字以外）
+
+    CreateCompartmentResponse:
+      type: object
+      required:
+        - id
+        - fridge_id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: コンパートメントID
+        fridge_id:
+          type: string
+          format: uuid
+          description: 冷蔵庫ID
+        name:
+          type: string
+          description: コンパートメント名
+
+    UpdateCompartmentRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: コンパートメント名（制御文字以外）
+
+    UpdateCompartmentResponse:
+      type: object
+      required:
+        - id
+        - fridge_id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: コンパートメントID
+        fridge_id:
+          type: string
+          format: uuid
+          description: 冷蔵庫ID
+        name:
+          type: string
+          description: コンパートメント名
+
+    CreateItemRequest:
+      type: object
+      required:
+        - name
+        - quantity
+        - unit
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: アイテム名（制御文字以外）
+        quantity:
+          type: number
+          format: double
+          description: 数量
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 単位（制御文字以外）
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+          description: 賞味期限（YYYY-MM-DD）
+
+    CreateItemResponse:
+      type: object
+      required:
+        - id
+        - compartment_id
+        - name
+        - quantity
+        - unit
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: アイテムID
+        compartment_id:
+          type: string
+          format: uuid
+          description: コンパートメントID
+        name:
+          type: string
+          description: アイテム名
+        quantity:
+          type: number
+          format: double
+          description: 数量
+        unit:
+          type: string
+          description: 単位
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+          description: 賞味期限（YYYY-MM-DD）
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時（ISO 8601 UTC）
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時（ISO 8601 UTC）
+
+    UpdateItemRequest:
+      type: object
+      required:
+        - name
+        - quantity
+        - unit
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: アイテム名（制御文字以外）
+        quantity:
+          type: number
+          format: double
+          description: 数量
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: 単位（制御文字以外）
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+          description: 賞味期限（YYYY-MM-DD）
+
+    UpdateItemResponse:
+      type: object
+      required:
+        - id
+        - compartment_id
+        - name
+        - quantity
+        - unit
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: アイテムID
+        compartment_id:
+          type: string
+          format: uuid
+          description: コンパートメントID
+        name:
+          type: string
+          description: アイテム名
+        quantity:
+          type: number
+          format: double
+          description: 数量
+        unit:
+          type: string
+          description: 単位
+        expires_at:
+          type: string
+          format: date
+          nullable: true
+          description: 賞味期限（YYYY-MM-DD）
+        created_at:
+          type: string
+          format: date-time
+          description: 作成日時（ISO 8601 UTC）
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新日時（ISO 8601 UTC）
