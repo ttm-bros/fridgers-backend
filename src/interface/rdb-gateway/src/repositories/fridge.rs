@@ -6,15 +6,13 @@ use uuid::Uuid;
 
 impl PostgresRepository {
     pub async fn save_fridge(&self, fridge: &Fridge) -> Result<()> {
-        sqlx::query(
-            "INSERT INTO fridges (id, name, owner_user_id) VALUES ($1, $2, $3)",
-        )
-        .bind(fridge.id.value())
-        .bind(fridge.name.value())
-        .bind(fridge.owner_user_id.value())
-        .execute(&self.pool)
-        .await
-        .map_err(|e| Error::ExternalServer(format!("Failed to save fridge: {}", e)))?;
+        sqlx::query("INSERT INTO fridges (id, name, owner_user_id) VALUES ($1, $2, $3)")
+            .bind(fridge.id.value())
+            .bind(fridge.name.value())
+            .bind(fridge.owner_user_id.value())
+            .execute(&self.pool)
+            .await
+            .map_err(|e| Error::ExternalServer(format!("Failed to save fridge: {}", e)))?;
 
         Ok(())
     }

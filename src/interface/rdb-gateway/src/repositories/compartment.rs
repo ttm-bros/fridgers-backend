@@ -6,15 +6,13 @@ use uuid::Uuid;
 
 impl PostgresRepository {
     pub async fn save_compartment(&self, compartment: &Compartment) -> Result<()> {
-        sqlx::query(
-            "INSERT INTO compartments (id, fridge_id, name) VALUES ($1, $2, $3)",
-        )
-        .bind(compartment.id.value())
-        .bind(compartment.fridge_id.value())
-        .bind(compartment.name.value())
-        .execute(&self.pool)
-        .await
-        .map_err(|e| Error::ExternalServer(format!("Failed to save compartment: {}", e)))?;
+        sqlx::query("INSERT INTO compartments (id, fridge_id, name) VALUES ($1, $2, $3)")
+            .bind(compartment.id.value())
+            .bind(compartment.fridge_id.value())
+            .bind(compartment.name.value())
+            .execute(&self.pool)
+            .await
+            .map_err(|e| Error::ExternalServer(format!("Failed to save compartment: {}", e)))?;
         Ok(())
     }
 
@@ -34,7 +32,10 @@ impl PostgresRepository {
         }
     }
 
-    pub async fn find_compartments_by_fridge_id(&self, fridge_id: &str) -> Result<Vec<Compartment>> {
+    pub async fn find_compartments_by_fridge_id(
+        &self,
+        fridge_id: &str,
+    ) -> Result<Vec<Compartment>> {
         let uuid = Uuid::parse_str(fridge_id)
             .map_err(|e| Error::InvalidArgument(format!("Invalid UUID format: {}", e)))?;
         let rows = sqlx::query_as::<_, CompartmentRow>(
@@ -48,14 +49,15 @@ impl PostgresRepository {
     }
 
     pub async fn update_compartment(&self, compartment: &Compartment) -> Result<()> {
-        let result = sqlx::query(
-            "UPDATE compartments SET name = $1, updated_at = NOW() WHERE id = $2",
-        )
-        .bind(compartment.name.value())
-        .bind(compartment.id.value())
-        .execute(&self.pool)
-        .await
-        .map_err(|e| Error::ExternalServer(format!("Failed to update compartment: {}", e)))?;
+        let result =
+            sqlx::query("UPDATE compartments SET name = $1, updated_at = NOW() WHERE id = $2")
+                .bind(compartment.name.value())
+                .bind(compartment.id.value())
+                .execute(&self.pool)
+                .await
+                .map_err(|e| {
+                    Error::ExternalServer(format!("Failed to update compartment: {}", e))
+                })?;
         if result.rows_affected() == 0 {
             return Err(Error::NotFound(format!(
                 "Compartment not found: {}",

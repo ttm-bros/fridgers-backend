@@ -24,16 +24,12 @@ impl TryFrom<String> for Email {
         // 基本的なフォーマットバリデーション: @ が1つ含まれ、前後が空でないこと
         let parts: Vec<&str> = email.split('@').collect();
         if parts.len() != 2 || parts[0].is_empty() || parts[1].is_empty() {
-            return Err(Error::InvalidFormat(
-                "Invalid email format".to_string(),
-            ));
+            return Err(Error::InvalidFormat("Invalid email format".to_string()));
         }
 
         // ドメイン部分に . が含まれること
         if !parts[1].contains('.') {
-            return Err(Error::InvalidFormat(
-                "Invalid email format".to_string(),
-            ));
+            return Err(Error::InvalidFormat("Invalid email format".to_string()));
         }
 
         Ok(Self {

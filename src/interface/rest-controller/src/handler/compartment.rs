@@ -5,8 +5,7 @@ use actix_web::{HttpResponse, web};
 use fridgers_backend_domain::compartment::{CompartmentId, CompartmentName};
 use fridgers_backend_domain::fridge::FridgeId;
 use fridgers_backend_use_case::{
-    self as use_case, Interactor, Repository,
-    dto::compartment::create::CreateCompartmentRequest,
+    self as use_case, Interactor, Repository, dto::compartment::create::CreateCompartmentRequest,
     dto::compartment::update::UpdateCompartmentRequest,
 };
 use std::sync::Arc;

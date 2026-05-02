@@ -8,8 +8,9 @@ use std::sync::Arc;
 
 /// テスト用のDBプールを作成する
 async fn create_test_pool() -> PgPool {
-    let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgresql://fridgers:fridgers_password@localhost:5432/fridgers".to_string());
+    let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
+        "postgresql://fridgers:fridgers_password@localhost:5432/fridgers".to_string()
+    });
 
     PgPool::connect(&database_url)
         .await
@@ -17,7 +18,14 @@ async fn create_test_pool() -> PgPool {
 }
 
 /// テスト用のActix-webアプリを構築する
-pub async fn create_test_app() -> (impl actix_web::dev::Service<actix_http::Request, Response = actix_web::dev::ServiceResponse, Error = actix_web::Error>, PgPool) {
+pub async fn create_test_app() -> (
+    impl actix_web::dev::Service<
+        actix_http::Request,
+        Response = actix_web::dev::ServiceResponse,
+        Error = actix_web::Error,
+    >,
+    PgPool,
+) {
     let pool = create_test_pool().await;
     let repository = PostgresRepository::new(pool.clone());
     let jwt_config = JwtConfig {

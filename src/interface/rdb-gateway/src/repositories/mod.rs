@@ -7,8 +7,8 @@ use fridgers_backend_domain::compartment::Compartment;
 use fridgers_backend_domain::fridge::Fridge;
 use fridgers_backend_domain::item::Item;
 use fridgers_backend_domain::user::User;
-use fridgers_backend_use_case::repository::Repository;
 use fridgers_backend_use_case::Result;
+use fridgers_backend_use_case::repository::Repository;
 use sqlx::PgPool;
 
 /// PostgreSQLリポジトリ実装

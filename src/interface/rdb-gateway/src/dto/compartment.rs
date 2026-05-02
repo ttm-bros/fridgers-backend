@@ -18,8 +18,8 @@ impl TryFrom<CompartmentRow> for Compartment {
     fn try_from(row: CompartmentRow) -> Result<Self> {
         let id = CompartmentId::from(row.id);
         let fridge_id = FridgeId::from(row.fridge_id);
-        let name = CompartmentName::try_from(row.name)
-            .map_err(fridgers_backend_use_case::Error::from)?;
+        let name =
+            CompartmentName::try_from(row.name).map_err(fridgers_backend_use_case::Error::from)?;
         Ok(Compartment::new(id, fridge_id, name))
     }
 }

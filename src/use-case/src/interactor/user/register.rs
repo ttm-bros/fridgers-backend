@@ -27,7 +27,12 @@ impl<R: Repository> Interactor<R> {
         let password_hash = PasswordHash::from(hashed.to_string());
 
         // ユーザーエンティティを作成
-        let user = User::new(request.user_id, request.user_name, request.email, password_hash);
+        let user = User::new(
+            request.user_id,
+            request.user_name,
+            request.email,
+            password_hash,
+        );
 
         // リポジトリに保存
         self.repository.save_user(&user).await?;

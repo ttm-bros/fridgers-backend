@@ -1,6 +1,6 @@
+use crate::Result;
 use crate::interactor::Interactor;
 use crate::repository::Repository;
-use crate::Result;
 
 impl<R: Repository> Interactor<R> {
     /// 冷蔵庫を削除する
