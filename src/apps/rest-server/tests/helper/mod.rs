@@ -44,8 +44,12 @@ pub async fn create_test_app() -> (
     (app, pool)
 }
 
-/// テスト後にusersテーブルをクリーンアップする
+/// テスト後にfridges→usersの順でクリーンアップする（FK制約のため順序が重要）
 pub async fn cleanup_users(pool: &PgPool) {
+    sqlx::query("DELETE FROM fridges")
+        .execute(pool)
+        .await
+        .expect("Failed to cleanup fridges table");
     sqlx::query("DELETE FROM users")
         .execute(pool)
         .await
