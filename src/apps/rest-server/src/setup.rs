@@ -10,8 +10,7 @@ use tracing_log::LogTracer;
 
 /// ロガーの初期化
 pub fn setup_logger(config: &Config) -> std::io::Result<()> {
-    LogTracer::init()
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    LogTracer::init().map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
     tracing_subscriber::fmt()
         .with_max_level(Level::from_str(config.log.level.as_str()).unwrap())
@@ -22,10 +21,17 @@ pub fn setup_logger(config: &Config) -> std::io::Result<()> {
 }
 
 /// 依存性の構築（DI Container）
-pub async fn setup_dependencies(config: &Config) -> std::io::Result<Arc<Interactor<PostgresRepository>>> {
+pub async fn setup_dependencies(
+    config: &Config,
+) -> std::io::Result<Arc<Interactor<PostgresRepository>>> {
     let pool = PgPool::connect(&config.db.database_url)
         .await
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, format!("Failed to connect to database: {}", e)))?;
+        .map_err(|e| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Failed to connect to database: {}", e),
+            )
+        })?;
 
     let jwt_config = JwtConfig {
         secret: config.auth.jwt_secret.clone(),

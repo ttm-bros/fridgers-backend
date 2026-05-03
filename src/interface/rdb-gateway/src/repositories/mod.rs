@@ -7,8 +7,8 @@ use fridgers_backend_domain::compartment::Compartment;
 use fridgers_backend_domain::fridge::Fridge;
 use fridgers_backend_domain::item::Item;
 use fridgers_backend_domain::user::User;
-use fridgers_backend_use_case::repository::Repository;
 use fridgers_backend_use_case::Result;
+use fridgers_backend_use_case::repository::Repository;
 use sqlx::PgPool;
 
 /// PostgreSQLリポジトリ実装
@@ -45,6 +45,10 @@ impl Repository for PostgresRepository {
 
     async fn find_fridge_by_id(&self, id: &str) -> Result<Option<Fridge>> {
         self.find_fridge_by_id(id).await
+    }
+
+    async fn find_fridges_by_owner_user_id(&self, owner_user_id: &str) -> Result<Vec<Fridge>> {
+        self.find_fridges_by_owner_user_id(owner_user_id).await
     }
 
     async fn delete_fridge(&self, id: &str) -> Result<()> {

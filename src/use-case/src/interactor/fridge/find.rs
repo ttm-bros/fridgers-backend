@@ -12,10 +12,7 @@ impl<R: Repository> Interactor<R> {
             .await?
             .ok_or_else(|| Error::NotFound(format!("Fridge not found: {}", id)))?;
 
-        let compartments = self
-            .repository
-            .find_compartments_by_fridge_id(id)
-            .await?;
+        let compartments = self.repository.find_compartments_by_fridge_id(id).await?;
 
         let mut compartments_with_items = Vec::new();
         for compartment in compartments {
@@ -23,10 +20,7 @@ impl<R: Repository> Interactor<R> {
                 .repository
                 .find_items_by_compartment_id(&compartment.id.value().to_string())
                 .await?;
-            compartments_with_items.push(CompartmentWithItems {
-                compartment,
-                items,
-            });
+            compartments_with_items.push(CompartmentWithItems { compartment, items });
         }
 
         Ok(FridgeWithCompartments {

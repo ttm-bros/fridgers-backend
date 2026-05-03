@@ -24,6 +24,12 @@ pub trait Repository: Send + Sync {
     /// 冷蔵庫IDで冷蔵庫を検索する
     fn find_fridge_by_id(&self, id: &str) -> impl Future<Output = Result<Option<Fridge>>> + Send;
 
+    /// オーナーユーザーIDに紐づく冷蔵庫一覧を取得する
+    fn find_fridges_by_owner_user_id(
+        &self,
+        owner_user_id: &str,
+    ) -> impl Future<Output = Result<Vec<Fridge>>> + Send;
+
     /// 冷蔵庫を削除する
     fn delete_fridge(&self, id: &str) -> impl Future<Output = Result<()>> + Send;
 

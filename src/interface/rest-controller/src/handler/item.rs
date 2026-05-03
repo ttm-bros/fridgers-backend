@@ -5,8 +5,7 @@ use actix_web::{HttpResponse, web};
 use fridgers_backend_domain::compartment::CompartmentId;
 use fridgers_backend_domain::item::{ItemId, ItemName, ItemUnit};
 use fridgers_backend_use_case::{
-    self as use_case, Interactor, Repository,
-    dto::item::create::CreateItemRequest,
+    self as use_case, Interactor, Repository, dto::item::create::CreateItemRequest,
     dto::item::update::UpdateItemRequest,
 };
 use std::sync::Arc;
@@ -55,7 +54,8 @@ pub async fn update_item<R: Repository + 'static>(
     let name = ItemName::try_from(req.name.clone()).map_err(use_case::Error::from)?;
     let unit = ItemUnit::try_from(req.unit.clone()).map_err(use_case::Error::from)?;
 
-    let use_case_request = UpdateItemRequest::new(item_id, name, req.quantity, unit, req.expires_at);
+    let use_case_request =
+        UpdateItemRequest::new(item_id, name, req.quantity, unit, req.expires_at);
     let item = interactor
         .handle_update_item(&compartment_id_str, use_case_request)
         .await?;

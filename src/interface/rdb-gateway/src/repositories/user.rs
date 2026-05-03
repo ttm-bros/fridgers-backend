@@ -6,16 +6,14 @@ use uuid::Uuid;
 
 impl PostgresRepository {
     pub async fn save_user(&self, user: &User) -> Result<()> {
-        sqlx::query(
-            "INSERT INTO users (id, name, email, password_hash) VALUES ($1, $2, $3, $4)",
-        )
-        .bind(user.id.value())
-        .bind(user.name.value())
-        .bind(user.email.value())
-        .bind(user.password_hash.value())
-        .execute(&self.pool)
-        .await
-        .map_err(|e| Error::ExternalServer(format!("Failed to save user: {}", e)))?;
+        sqlx::query("INSERT INTO users (id, name, email, password_hash) VALUES ($1, $2, $3, $4)")
+            .bind(user.id.value())
+            .bind(user.name.value())
+            .bind(user.email.value())
+            .bind(user.password_hash.value())
+            .execute(&self.pool)
+            .await
+            .map_err(|e| Error::ExternalServer(format!("Failed to save user: {}", e)))?;
 
         Ok(())
     }

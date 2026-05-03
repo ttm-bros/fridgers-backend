@@ -1,6 +1,6 @@
 pub mod auth;
-mod error;
 pub mod dto;
+mod error;
 pub mod interactor;
 pub mod repository;
 

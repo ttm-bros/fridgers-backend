@@ -70,7 +70,10 @@ impl PostgresRepository {
         .await
         .map_err(|e| Error::ExternalServer(format!("Failed to update item: {}", e)))?;
         if result.rows_affected() == 0 {
-            return Err(Error::NotFound(format!("Item not found: {}", item.id.value())));
+            return Err(Error::NotFound(format!(
+                "Item not found: {}",
+                item.id.value()
+            )));
         }
         Ok(())
     }

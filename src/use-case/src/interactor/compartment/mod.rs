@@ -1,8 +1,8 @@
+use crate::Error;
+use crate::Result;
 use crate::dto::compartment::create::CreateCompartmentRequest;
 use crate::dto::compartment::update::UpdateCompartmentRequest;
 use crate::repository::Repository;
-use crate::Result;
-use crate::Error;
 use fridgers_backend_domain::compartment::Compartment;
 
 impl<R: Repository> crate::interactor::Interactor<R> {
@@ -60,9 +60,7 @@ impl<R: Repository> crate::interactor::Interactor<R> {
             .repository
             .find_compartment_by_id(compartment_id)
             .await?
-            .ok_or_else(|| {
-                Error::NotFound(format!("Compartment not found: {}", compartment_id))
-            })?;
+            .ok_or_else(|| Error::NotFound(format!("Compartment not found: {}", compartment_id)))?;
 
         if existing.fridge_id.value().to_string() != fridge_id {
             return Err(Error::NotFound(format!(

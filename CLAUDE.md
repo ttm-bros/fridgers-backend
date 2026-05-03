@@ -156,6 +156,7 @@ make api-down
 | GET | `/liveness` | ヘルスチェック |
 | POST | `/v1/users` | ユーザー登録（email, password, name） |
 | POST | `/v1/auth/login` | ログイン（email, password → JWT） |
+| GET | `/v1/fridges` | 冷蔵庫一覧取得（ログイン中ユーザーが所有するもの。Bearer 必須） |
 | POST | `/v1/fridges` | 冷蔵庫作成 |
 | GET | `/v1/fridges/{fridge_id}` | 冷蔵庫取得（コンパートメント・アイテム含む） |
 | DELETE | `/v1/fridges/{fridge_id}` | 冷蔵庫削除 |

@@ -85,6 +85,30 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /fridges:
+    get:
+      summary: 冷蔵庫一覧取得（ログイン中ユーザーが所有するもの）
+      operationId: listFridges
+      tags:
+        - Fridge
+      responses:
+        "200":
+          description: 冷蔵庫一覧取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListFridgesResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       summary: 冷蔵庫作成
       operationId: createFridge
@@ -592,6 +616,35 @@ components:
           description: オーナーユーザーID
 
     CreateFridgeResponse:
+      type: object
+      required:
+        - id
+        - name
+        - owner_user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 冷蔵庫ID
+        name:
+          type: string
+          description: 冷蔵庫名
+        owner_user_id:
+          type: string
+          format: uuid
+          description: オーナーユーザーID
+
+    ListFridgesResponse:
+      type: object
+      required:
+        - fridges
+      properties:
+        fridges:
+          type: array
+          items:
+            $ref: "#/components/schemas/FridgeListItem"
+
+    FridgeListItem:
       type: object
       required:
         - id
