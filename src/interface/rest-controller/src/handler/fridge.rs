@@ -1,7 +1,8 @@
 use crate::error::Result;
 use crate::schema::fridge::create::{self as create_schema};
 use crate::schema::fridge::get::{self as get_schema};
-use actix_web::{HttpResponse, web};
+use crate::schema::fridge::list::{self as list_schema};
+use actix_web::{HttpRequest, HttpResponse, web};
 use fridgers_backend_domain::fridge::{FridgeId, FridgeName};
 use fridgers_backend_domain::user::UserId;
 use fridgers_backend_use_case::{
@@ -43,4 +44,23 @@ pub async fn delete_fridge<R: Repository + 'static>(
     let fridge_id = path.into_inner();
     interactor.handle_delete_fridge(&fridge_id).await?;
     Ok(HttpResponse::NoContent().finish())
+}
+
+pub async fn list_fridges<R: Repository + 'static>(
+    interactor: web::Data<Arc<Interactor<R>>>,
+    req: HttpRequest,
+) -> Result<HttpResponse> {
+    let token = req
+        .headers()
+        .get("Authorization")
+        .and_then(|h| h.to_str().ok())
+        .and_then(|s| s.strip_prefix("Bearer "))
+        .ok_or_else(|| {
+            use_case::Error::Unauthorized("Missing or invalid Authorization header".into())
+        })?;
+
+    let claims = use_case::auth::decode_token(token, &interactor.jwt_config)?;
+
+    let response = interactor.handle_list_fridges(&claims.sub).await?;
+    Ok(HttpResponse::Ok().json(list_schema::ListFridgesResponse::from(response)))
 }
