@@ -1,4 +1,5 @@
 use crate::error::Result;
+use crate::extractor::extract_bearer_token;
 use crate::schema::fridge::create::{self as create_schema};
 use crate::schema::fridge::get::{self as get_schema};
 use crate::schema::fridge::list::{self as list_schema};
@@ -50,15 +51,7 @@ pub async fn list_fridges<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let token = req
-        .headers()
-        .get("Authorization")
-        .and_then(|h| h.to_str().ok())
-        .and_then(|s| s.strip_prefix("Bearer "))
-        .ok_or_else(|| {
-            use_case::Error::Unauthorized("Missing or invalid Authorization header".into())
-        })?;
-
+    let token = extract_bearer_token(&req)?;
     let claims = use_case::auth::decode_token(token, &interactor.jwt_config)?;
 
     let response = interactor.handle_list_fridges(&claims.sub).await?;

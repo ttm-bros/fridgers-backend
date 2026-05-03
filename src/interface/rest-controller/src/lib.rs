@@ -1,4 +1,5 @@
 mod error;
+mod extractor;
 mod handler;
 pub mod router;
 pub mod schema;
