@@ -47,6 +47,10 @@ impl Repository for PostgresRepository {
         self.find_fridge_by_id(id).await
     }
 
+    async fn find_fridges_by_owner_user_id(&self, owner_user_id: &str) -> Result<Vec<Fridge>> {
+        self.find_fridges_by_owner_user_id(owner_user_id).await
+    }
+
     async fn delete_fridge(&self, id: &str) -> Result<()> {
         self.delete_fridge(id).await
     }
