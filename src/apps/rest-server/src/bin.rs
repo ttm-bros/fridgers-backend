@@ -13,13 +13,14 @@ async fn main() -> std::io::Result<()> {
     setup::setup_logger(&config)?;
 
     // 依存性の構築
-    let interactor = setup::setup_dependencies(&config).await?;
+    let (interactor, jwt_config) = setup::setup_dependencies(&config).await?;
 
     // HTTPサーバーの起動
     HttpServer::new(move || {
         App::new()
             // DIコンテナの登録
             .app_data(web::Data::new(interactor.clone()))
+            .app_data(web::Data::new(jwt_config.clone()))
             // トレース用のスパンを追加
             .wrap_fn(|req, srv| {
                 let span = info_span!(

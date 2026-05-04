@@ -23,7 +23,7 @@ pub fn setup_logger(config: &Config) -> std::io::Result<()> {
 /// 依存性の構築（DI Container）
 pub async fn setup_dependencies(
     config: &Config,
-) -> std::io::Result<Arc<Interactor<PostgresRepository>>> {
+) -> std::io::Result<(Arc<Interactor<PostgresRepository>>, JwtConfig)> {
     let pool = PgPool::connect(&config.db.database_url)
         .await
         .map_err(|e| {
@@ -39,5 +39,6 @@ pub async fn setup_dependencies(
     };
 
     let repository = PostgresRepository::new(pool);
-    Ok(Arc::new(Interactor::new(repository, jwt_config)))
+    let interactor = Arc::new(Interactor::new(repository, jwt_config.clone()));
+    Ok((interactor, jwt_config))
 }
