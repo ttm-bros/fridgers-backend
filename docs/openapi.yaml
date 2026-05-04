@@ -603,17 +603,12 @@ components:
       type: object
       required:
         - name
-        - owner_user_id
       properties:
         name:
           type: string
           minLength: 1
           maxLength: 50
           description: 冷蔵庫名（英数字・スペース・ハイフン・アンダースコア）
-        owner_user_id:
-          type: string
-          format: uuid
-          description: オーナーユーザーID
 
     CreateFridgeResponse:
       type: object

@@ -1,4 +1,5 @@
 use crate::error::Result;
+use crate::extractor::AuthenticatedUser;
 use crate::schema::compartment::create::{self as create_schema};
 use crate::schema::compartment::update::{self as update_schema};
 use actix_web::{HttpResponse, web};
@@ -13,6 +14,7 @@ use uuid::Uuid;
 
 pub async fn create_compartment<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<String>,
     req: web::Json<create_schema::CreateCompartmentRequest>,
 ) -> Result<HttpResponse> {
@@ -26,7 +28,7 @@ pub async fn create_compartment<R: Repository + 'static>(
 
     let use_case_request = CreateCompartmentRequest::new(compartment_id, fridge_id, name);
     let compartment = interactor
-        .handle_create_compartment(use_case_request)
+        .handle_create_compartment(&user.user_id, use_case_request)
         .await?;
 
     let response = create_schema::CreateCompartmentResponse::from(compartment);
@@ -35,6 +37,7 @@ pub async fn create_compartment<R: Repository + 'static>(
 
 pub async fn update_compartment<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<(String, String)>,
     req: web::Json<update_schema::UpdateCompartmentRequest>,
 ) -> Result<HttpResponse> {
@@ -52,7 +55,7 @@ pub async fn update_compartment<R: Repository + 'static>(
 
     let use_case_request = UpdateCompartmentRequest::new(compartment_id, fridge_id, name);
     let compartment = interactor
-        .handle_update_compartment(use_case_request)
+        .handle_update_compartment(&user.user_id, use_case_request)
         .await?;
 
     let response = update_schema::UpdateCompartmentResponse::from(compartment);
@@ -61,11 +64,12 @@ pub async fn update_compartment<R: Repository + 'static>(
 
 pub async fn delete_compartment<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<(String, String)>,
 ) -> Result<HttpResponse> {
     let (fridge_id_str, compartment_id_str) = path.into_inner();
     interactor
-        .handle_delete_compartment(&fridge_id_str, &compartment_id_str)
+        .handle_delete_compartment(&user.user_id, &fridge_id_str, &compartment_id_str)
         .await?;
     Ok(HttpResponse::NoContent().finish())
 }

@@ -174,7 +174,10 @@ make api-down
   - Claims: `sub`（UserID）、`exp`（有効期限）、`iat`（発行日時）
   - 設定: `JwtConfig { secret, expiry_hours }`（環境変数`AUTH_*`から読み込み）
 - **フロー**: ユーザー登録（POST /v1/users） → ログイン（POST /v1/auth/login） → JWTトークン取得
-- **認可ミドルウェア**: 未実装（今後の課題）
+- **認可**: `POST /v1/users` と `POST /v1/auth/login` 以外のすべてのエンドポイントで Bearer 必須
+  - Actix の `FromRequest` を実装した `AuthenticatedUser` 抽出器（`src/interface/rest-controller/src/extractor/authenticated_user.rs`）でハンドラの引数として透過的に取得
+  - 各 Interactor メソッドは `requesting_user_id: &str` を受け取り、`verify_fridge_ownership` / `verify_compartment_ownership` でリソースのオーナーが一致することを確認
+  - 他人のリソースへのアクセスはリソース存在の漏洩を防ぐため `404 Not Found` を返す（`403 Forbidden` ではなく）
 
 ### Docker構成
 
