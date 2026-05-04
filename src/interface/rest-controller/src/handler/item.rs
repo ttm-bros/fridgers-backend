@@ -1,4 +1,5 @@
 use crate::error::Result;
+use crate::extractor::AuthenticatedUser;
 use crate::schema::item::create::{self as create_schema};
 use crate::schema::item::update::{self as update_schema};
 use actix_web::{HttpResponse, web};
@@ -13,6 +14,7 @@ use uuid::Uuid;
 
 pub async fn create_item<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<(String, String)>,
     req: web::Json<create_schema::CreateItemRequest>,
 ) -> Result<HttpResponse> {
@@ -34,7 +36,9 @@ pub async fn create_item<R: Repository + 'static>(
         unit,
         req.expires_at,
     );
-    let item = interactor.handle_create_item(use_case_request).await?;
+    let item = interactor
+        .handle_create_item(&user.user_id, use_case_request)
+        .await?;
 
     let response = create_schema::CreateItemResponse::from(item);
     Ok(HttpResponse::Created().json(response))
@@ -42,6 +46,7 @@ pub async fn create_item<R: Repository + 'static>(
 
 pub async fn update_item<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<(String, String, String)>,
     req: web::Json<update_schema::UpdateItemRequest>,
 ) -> Result<HttpResponse> {
@@ -57,7 +62,7 @@ pub async fn update_item<R: Repository + 'static>(
     let use_case_request =
         UpdateItemRequest::new(item_id, name, req.quantity, unit, req.expires_at);
     let item = interactor
-        .handle_update_item(&compartment_id_str, use_case_request)
+        .handle_update_item(&user.user_id, &compartment_id_str, use_case_request)
         .await?;
 
     let response = update_schema::UpdateItemResponse::from(item);
@@ -66,11 +71,12 @@ pub async fn update_item<R: Repository + 'static>(
 
 pub async fn delete_item<R: Repository + 'static>(
     interactor: web::Data<Arc<Interactor<R>>>,
+    user: AuthenticatedUser,
     path: web::Path<(String, String, String)>,
 ) -> Result<HttpResponse> {
     let (_fridge_id_str, compartment_id_str, item_id_str) = path.into_inner();
     interactor
-        .handle_delete_item(&compartment_id_str, &item_id_str)
+        .handle_delete_item(&user.user_id, &compartment_id_str, &item_id_str)
         .await?;
     Ok(HttpResponse::NoContent().finish())
 }

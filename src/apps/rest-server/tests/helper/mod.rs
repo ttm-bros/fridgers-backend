@@ -32,11 +32,12 @@ pub async fn create_test_app() -> (
         secret: "test-secret-key".to_string(),
         expiry_hours: 24,
     };
-    let interactor = Arc::new(Interactor::new(repository, jwt_config));
+    let interactor = Arc::new(Interactor::new(repository, jwt_config.clone()));
 
     let app = test::init_service(
         App::new()
             .app_data(web::Data::new(interactor))
+            .app_data(web::Data::new(jwt_config))
             .configure(app::configure_routes::<PostgresRepository>),
     )
     .await;
