@@ -62,13 +62,14 @@ macro_rules! define_string {
             type Error = $crate::error::Error;
 
             fn try_from(value: String) -> $crate::error::Result<Self> {
-                if value.len() < $min {
+                let char_count = value.chars().count();
+                if char_count < $min {
                     return Err($crate::error::Error::InvalidLengthRange(format!(
                         concat!(stringify!($t), " must be at least {} characters"),
                         $min,
                     )));
                 }
-                if value.len() > $max {
+                if char_count > $max {
                     return Err($crate::error::Error::InvalidLengthRange(format!(
                         concat!(stringify!($t), " cannot exceed {} characters"),
                         $max,
